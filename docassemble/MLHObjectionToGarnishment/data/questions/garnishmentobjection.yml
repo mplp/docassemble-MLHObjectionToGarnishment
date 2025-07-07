@@ -325,7 +325,7 @@ subject: |
 content: |
   The case number is usually on the top right of your court forms. Below is an image where you can find this info.
 
-  ${ image_case_number.show(width="100%") }
+  [FILE case_number_writ_for_garnishment.png, 100%]
 ---
 id: issue_date
 question: |
@@ -357,7 +357,8 @@ subject: |
   How do I find the Date of Issue?
 content: |
   Look for the Date of Issue on the bottom left-hand corner of the Writ of Garnishment.
-# add image example
+  
+  [FILE Date-of-Issue_Request_for_Garnishment.PNG, 100%]
 ---
 id: service_date
 question: |
@@ -417,6 +418,10 @@ content: |
     * A tenant 
 
     * The State of Michigan
+
+  You can find the garnishee's name and address in your court documents.
+  
+  [FILE Who_is_the_Garnishee.png, 100%]
 ---
 id: is_periodic_garnishment
 question: |
@@ -432,7 +437,8 @@ subject: |
   What is a periodic garnishment?
 content: |
   You will know the garnishment is periodic if your Request and Writ for Garnishment says "periodic" at the top center.
-# add image of court doc
+  
+  [FILE Periodic-Request_for_Garnishment.PNG, 100%]
 ---
 id: reason_for_objection_info
 question: |
@@ -555,6 +561,8 @@ subject: |
   How do I know if there is an installment payment order?
 content: |
   You would have received an Order Regarding Installment Payments, as seen in the image below.
+
+  [FILE order_regarding_installment_payments.PNG, 100%]
 ---
 id: is_current
 question: |
@@ -588,8 +596,9 @@ template: court_that_issued_explanation_template
 subject: |
   How do I find the court that issued the order?
 content: |
-  The order would have been issued by either a District or Circuit Court. Enter whichever one has a number in front of it, such as "23rd Judicial District," or "17th Judicial Circuit." 
-# add photo example
+  The order would have been issued by either a District or Circuit Court. Enter whichever one has a number in front of it, such as "23rd Judicial District," or "17th Judicial Circuit."
+  
+  [FILE what_court.png, 100%]
 ---
 id: is_same_case_number
 question: |
@@ -610,7 +619,8 @@ subject: |
   Where can I find the case number?
 content: |
   Look for the case number in the upper right corner of the forms.
-# add image
+  
+  [FILE case_number_installment-payment-order.png, 100%]
 ---
 id: attach_installment_order
 question: |
