@@ -31,28 +31,28 @@ code: |
   al_form_type = "existing_case"
 ---
 code: |
-  resource_page_url_only = "https://michiganlegalhelp.org/"
+  resource_page_url_only = "https://michiganlegalhelp.org/node/619/"
   resource_page_name = "Objection to Garnishment"
   cover_sheet_header = ""
 ---
 code: |
-  survey_link_url_only = "#"
+  survey_link_url_only = "https://www.surveymonkey.com/r/WRK3V26"
 ---
 template: survey_embed_script
 content: |
   <script>
-    
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd3_2FNdn6sngWnrPcDhGLsgsPdZn_2BmeFykDNFOiUIRFH7A.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
   </script>
 ---
 code: |
   MLH_time_min = 10
   MLH_time_max = 30
-  MLH_materials_included = True
+  MLH_materials_included = False
   MLH_form_type = "forms"
 ---
 template: MLH_welcome_message     
 content: |
-  Welcome to the ${ MLH_interview_short_title } tool.
+  Welcome! This tool will help you prepare the form to file an Objection to Garnishment.
 ---
 objects:
   - users: ALPeopleList.using(
@@ -133,12 +133,14 @@ code: |
     docket_number
     date_of_issue
     service_date
-    fourteen_day_warning
+    if days_elapsed.days > 14:
+      more_than_fourteen_days_warning
+    else:
+      fourteen_day_warning
 
     nav.set_section("signpost_garnishee_info")
     garnishees[0].name.first
     garnishees[0].address.address
-    garnishees[0].phone_number
 
     nav.set_section("signpost_objection_info")
     is_periodic_garnishment
@@ -147,34 +149,53 @@ code: |
     cannot_be_garnished_exceptions
   
     is_money_exempt
-    
-    in_process_bankruptcy
-    if in_process_bankruptcy:
-      bankruptcy_case_number
-      has_installment_payment_interview_order
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
+
+    if is_periodic_garnishment:
+      in_process_bankruptcy
+      if in_process_bankruptcy:
         bankruptcy_case_number
         has_installment_payment_interview_order
+      if not in_process_bankruptcy:
+        discharged_through_bankruptcy
+        if discharged_through_bankruptcy:
+          bankruptcy_case_number
+        has_installment_payment_interview_order
 
-    has_installment_payment_interview_order
-    
-    already_at_maximum
-    
-    is_paid_in_full
+    if not is_periodic_garnishment:
+      in_process_bankruptcy
+      if in_process_bankruptcy:
+        bankruptcy_case_number
+        is_paid_in_full
+      if not in_process_bankruptcy:
+        discharged_through_bankruptcy
+        if discharged_through_bankruptcy:
+          bankruptcy_case_number
+        is_paid_in_full
   
     writ_is_invalid
     if writ_is_invalid:
       invalid_writ_reason
 
+    if ((is_periodic_garnishment and not has_installment_payment)
+    or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection)):
+      if not (
+        is_money_exempt
+        or in_process_bankruptcy
+        or discharged_through_bankruptcy
+        or is_paid_in_full
+        or writ_is_invalid
+      ):
+        no_objections_exit
+
   if objection_type == "written_statement":
     written_statement_warning
     service_date
-    fourteen_day_warning
     
   nav.set_section("signpost_download")
   MLH_standard_outro_pages
+
+  if days_elapsed.days < 15:
+    final_fourteen_day_warning
     
   interview_order_objection_to_garnishment = True
 ---
@@ -211,6 +232,8 @@ code: |
       not_current_objection
       if not_current_objection:
         installment_payment_interview_order
+  already_at_maximum
+  is_paid_in_full
 
   has_installment_payment_interview_order = True
 ---  
@@ -236,7 +259,7 @@ continue button field: MLH_intro_landing
 ---
 id: more help intro screen
 question: |
-  This tool will help you prepare the form to file an _Objection to Garnishment_.
+  Is this tool right for you?
 subquestion: |
   Use this tool if you received a _Request and Writ for Garnishment_ and you have a reason to object to (disagree with) the garnishment.
 
@@ -246,6 +269,8 @@ continue button field: substantive_intro
 id: court type choice
 question: |
   Select your court
+
+  ${ collapse_template(court_type_selection_template) }
 fields:
   - What court is this case in?: court_type
     datatype: radio
@@ -253,7 +278,20 @@ fields:
       - Circuit: circuit
       - District: district
 continue button field: court_type_selection
-under: ${ collapse_template(court_type_selection_template) }
+---
+template: court_type_selection_template
+subject: |
+  How do I know which court my case is in?
+content: |
+  If you have any documents from your court case, look at the top of the first page. Most court documents will list the court information there. You can also visit the [Live Help](https://michiganlegalhelp.org/livehelp) page for more help.
+
+  **District Courts** handle cases involving $25,000 or less. This includes small claims cases and most eviction, land contract, and debt collection cases.
+
+  **Circuit Courts** handle:
+  
+  * domestic relations cases such as divorce, custody, and paternity
+  * personal protection orders
+  * some other cases that involve more than $25,000
 ---
 id: other_parties_name
 question: |
@@ -351,6 +389,9 @@ subquestion: |
 fields:
   - Date of Issue: date_of_issue
     datatype: date
+validation code: |
+      if date_of_issue > today():
+        validation_error("The Date of Issue cannot be in the future.")
 ---
 template: find_date_of_issue_template
 subject: |
@@ -372,6 +413,9 @@ subquestion: |
 fields:
   - Service date: service_date
     datatype: date
+validation code: |
+      if service_date > today():
+        validation_error("The service date cannot be in the future.")
 ---
 id: fourteen_day_warning
 question: |
@@ -387,6 +431,19 @@ subquestion: |
   Remember to file your answer by ${ format_date(service_date + date_interval(days=14)) }.
   % endif
 continue button field: fourteen_day_warning
+---
+id: more_than_fourteen_days_warning
+question: |
+  **Warning!**
+subquestion: |
+  Because it has been more than 14 days since you got the Writ, the garnishment will not be stopped.
+  
+  If the court agrees with your objection (it is upheld), you will have to wait for a refund from your creditor.
+continue button field: more_than_fourteen_days_warning
+---
+id: calculate days elapsed
+code: |
+  days_elapsed = today() - service_date
 ---
 id: written_statement_warning
 question: |
@@ -409,14 +466,11 @@ template: what_is_a_garnishee_template
 subject: |
   What is a garnishee?
 content: |
-  A garnishee is a third party that has control of the debtor's money or pays the debtor. For example, a garnishee could be 
+  A garnishee is a third party that has control of the debtor's money or pays the debtor. For example, a garnishee could be:
 
-    * A bank 
-
+    * A bank
     * An employer
-
-    * A tenant 
-
+    * A tenant
     * The State of Michigan
 
   You can find the garnishee's name and address in your court documents.
@@ -550,6 +604,8 @@ fields:
 ---
 id: has_installment_payment
 question: |
+  Installment payment plan
+subquestion: |
   You can object to periodic garnishments of your paycheck if you have an installment payment order and are current on the payments.
 fields:
   - Is there an installment payment order in place for this debt?: has_installment_payment
@@ -676,10 +732,31 @@ content: |
 id: invalid_writ_reason
 question: |
   Complete this sentence
-subquestion: |
-  Please put a "." at the end of the sentence. 
 fields:
   - "The writ was not properly issued or is otherwise invalid because:": invalid_writ_reason
+---
+id:
+question: |
+  Remember to file your answer by ${ format_date(service_date + date_interval(days=14)) }
+subquestion: |
+  You need to file the forms yourself. This tool will not file the forms for you.
+continue button field: final_fourteen_day_warning
+---
+id: no_objections_exit
+event: no_objections_exit
+question: |
+  Based on your answers, it appears you do not have a reason to object to the garnishment.
+subquestion: |
+  You cannot complete this tool unless one of the reasons for objecting applies to this garnishment.
+
+  You can hit **Undo** and change your answers, or **Exit**.
+
+action buttons:
+  - label: Exit
+    action: https://michiganlegalhelp.org/guide-to-legal-help
+    new window: True
+    color: danger
+    icon: right-from-bracket
 ---
 #######################################################
 ##### Documents 
@@ -774,16 +851,6 @@ attachment:
           % else:
           ${ "" }
           % endif
-      - "garnishees1_phone": |
-          % if objection_type == "writ_of_garnishment":
-            % if garnishees[0].no_phone_number:
-            ${ "Unknown phone" }
-            % else:
-            ${ phone_number_formatted(garnishees[0].phone_number) }
-            % endif
-          % else:
-          ${ "" }
-          % endif
       - "objects_to_writ": |
           % if objection_type == "writ_of_garnishment":
           True
@@ -802,14 +869,7 @@ attachment:
           % else:
           % endif
       - "bankruptcy_objection": |
-          % if objection_type == "writ_of_garnishment":
-            % if in_process_bankruptcy or discharged_through_bankruptcy:
-            True
-            % else:
-            False
-            % endif
-          % else:
-          % endif
+          ${ objection_type == "writ_of_garnishment" and (in_process_bankruptcy or discharged_through_bankruptcy) }
       - "bankruptcy_case": |
           % if objection_type == "writ_of_garnishment":
             % if in_process_bankruptcy or discharged_through_bankruptcy:
@@ -820,17 +880,10 @@ attachment:
           % else:
           % endif
       - "installment_payment_objection": |
-          % if objection_type == "writ_of_garnishment":
-            % if has_installment_payment and is_current or has_installment_payment and not is_current and not_current_objection:
-            True
-            % else:
-            False
-            % endif
-          % else:
-          % endif
+          ${ (objection_type == "writ_of_garnishment" and is_periodic_garnishment) and ((has_installment_payment and is_current) or (has_installment_payment and not is_current and not_current_objection)) }
       - "installment_issue_date": |
-          % if objection_type == "writ_of_garnishment":
-            % if has_installment_payment and is_current or has_installment_payment and not is_current and not_current_objection:
+          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
+            % if ((has_installment_payment) and (is_current)) or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
             ${ installment_order_date }
             % else:
             ${ "" }
@@ -838,8 +891,8 @@ attachment:
           % else:
           % endif
       - "installment_court": |
-          % if objection_type == "writ_of_garnishment":
-            % if has_installment_payment and is_current or has_installment_payment and not is_current and not_current_objection:
+          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
+            % if has_installment_payment and is_current or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
               % if court_ordered:
               ${ the_court }
               % else:
@@ -851,7 +904,7 @@ attachment:
           % else:
           % endif
       - "installment_case": |
-          % if objection_type == "writ_of_garnishment":
+          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
             % if ((has_installment_payment) and (is_current)) or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
               % if court_ordered and is_same_case_number:
               ${ docket_number }
@@ -881,7 +934,7 @@ attachment:
       - "invalid_writ_explanation": |
           % if objection_type == "writ_of_garnishment":
             % if writ_is_invalid:
-            ${ invalid_writ_reason }
+            ${ fix_punctuation(invalid_writ_reason) }
             % else:
             ${ "" }
             % endif
@@ -996,16 +1049,6 @@ attachment:
           ${ garnishees[0].name_full() }
           ${ garnishees[0].address.line_one() }
           ${ garnishees[0].address.line_two() }
-          % else:
-          ${ "" }
-          % endif
-      - "garnishees1_phone": |
-          % if objection_type == "writ_of_garnishment":
-            % if garnishees[0].no_phone_number:
-            ${ "Unknown phone" }
-            % else:
-            ${ phone_number_formatted(garnishees[0].phone_number) }
-            % endif
           % else:
           ${ "" }
           % endif
