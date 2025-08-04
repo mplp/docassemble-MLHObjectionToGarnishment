@@ -269,7 +269,7 @@ continue button field: substantive_intro
 id: court type choice
 question: |
   Select your court
-
+subquestion: |
   ${ collapse_template(court_type_selection_template) }
 fields:
   - What court is this case in?: court_type
@@ -447,7 +447,7 @@ code: |
 ---
 id: written_statement_warning
 question: |
-  Warning
+  **Warning!**
 subquestion: |
   A **written statement** is a statement from your creditor that tells you the balance of the judgment.
   
