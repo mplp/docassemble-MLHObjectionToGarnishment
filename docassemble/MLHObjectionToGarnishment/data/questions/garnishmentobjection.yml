@@ -188,6 +188,7 @@ code: |
         no_objections_exit
 
   if objection_type == "written_statement":
+    docket_number
     written_statement_warning
     service_date
     
@@ -607,10 +608,20 @@ question: |
   Installment payment plan
 subquestion: |
   You can object to periodic garnishments of your paycheck if you have an installment payment order and are current on the payments.
+
+  ${ collapse_template(set_up_installment_payment_plan) }
 fields:
   - Is there an installment payment order in place for this debt?: has_installment_payment
     datatype: yesnoradio
 under: ${ collapse_template(installment_payments_explanation_template) }
+---
+template: set_up_installment_payment_plan
+subject: |
+  How can I set up an installment payment plan?
+content: |
+  To apply for a court ordered installment payment plan, you need to file a Motion for Installment Payments. You can use the [Do-It-Yourself Motion for Installment Payment Plan](https://michiganlegalhelp.org/node/1312) tool to create your motion.
+
+  For more information, go to [Getting an Installment Payment Plan](https://michiganlegalhelp.org/resources/money-debt-and-consumer-issues/getting-installment-payment-plan). For step-by-step instructions, go to [How to File a Motion for Installment Payments](https://michiganlegalhelp.org/step/2083).
 ---
 template: installment_payments_explanation_template
 subject: |
@@ -796,12 +807,7 @@ attachment:
           % else:
           ${ "" }
           % endif
-      - "docket_number_1": |
-          % if objection_type == "writ_of_garnishment":
-          ${ docket_number }
-          % else:
-          ${ "" }
-          % endif
+      - "docket_number_1": ${ docket_number }
       - "trial_court_address_on_one_line": ${ the_court.address.on_one_line() }
       - "trial_court_phone_number": ${ the_court.phone }
       - "other_parties1_address_block": |
@@ -997,12 +1003,7 @@ attachment:
           % else:
           ${ "" }
           % endif
-      - "docket_number_1": |
-          % if objection_type == "writ_of_garnishment":
-          ${ docket_number }
-          % else:
-          ${ "" }
-          % endif
+      - "docket_number_1": ${ docket_number }
       - "trial_court_address_on_one_line": ${ the_court.address.on_one_line() }
       - "trial_court_phone_number": ${ the_court.phone }
       - "other_parties1_address_block": |
