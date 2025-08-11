@@ -44,7 +44,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MLHObjectionToGarnishment',
-      version='0.0.1',
+      version='0.0.2',
       description=('A Docassemble tool to create forms to object to garnishment in Michigan.'),
       long_description='# docassemble.MLHObjectionToGarnishment\n\nA Docassemble tool to create forms to object to garnishment in Michigan.\n\n## Author\n\nEmily Miller, ekressmiller@lsscm.org\n\n',
       long_description_content_type='text/markdown',
