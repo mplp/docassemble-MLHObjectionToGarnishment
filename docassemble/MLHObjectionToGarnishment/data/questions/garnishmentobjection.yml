@@ -112,7 +112,7 @@ code: |
   users[0].phone_number
   
   nav.set_section("signpost_case_info")
-  court_type_selection
+  court_type
   county_choice
   court_index
   the_court
@@ -188,8 +188,8 @@ code: |
         no_objections_exit
 
   if objection_type == "written_statement":
-    docket_number
     written_statement_warning
+    docket_number
     service_date
     
   nav.set_section("signpost_download")
@@ -278,7 +278,6 @@ fields:
     choices:
       - Circuit: circuit
       - District: district
-continue button field: court_type_selection
 ---
 template: court_type_selection_template
 subject: |
@@ -293,6 +292,31 @@ content: |
   * domestic relations cases such as divorce, custody, and paternity
   * personal protection orders
   * some other cases that involve more than $25,000
+---
+if: court_type == "district" and court_count > 1
+id: county court choice
+question: Which District Court in ${ county_choice } County is this case in?
+fields:
+  - Select a Court: court_index_for_multi_district
+    code: |
+      court_list.filter_courts_by_2([county_choice], ['district'], column_1='address_county', column_2='type')
+---
+code: |
+  if court_type == "circuit":
+    if court_count > 1:
+      ## because Ottawa is the only circuit court with multiple locations, this is currently customized for Ottawa specifically ##
+      court_index = next(court_list.filter_courts_by_3([county_choice], ['circuit'], [ottawa_circuit_location], column_1='address_county', column_2='type', column_3='address_city'))[0]
+    else:
+      court_index = next(court_list.filter_courts_by_2([county_choice], ['circuit'], column_1='address_county', column_2='type'))[0]
+  else:
+    court_count = len(list(court_list.filter_courts_by_2([county_choice], ['district'], column_1='address_county', column_2='type')))
+    if court_count > 1:
+      court_index = court_index_for_multi_district
+    else:
+      court_index = next(court_list.filter_courts_by_2([county_choice], ['district'], column_1='address_county', column_2='type'))[0]
+---
+code: |
+  ottawa_circuit_location = "Grand Haven"
 ---
 id: other_parties_name
 question: |
@@ -609,11 +633,12 @@ question: |
 subquestion: |
   You can object to periodic garnishments of your paycheck if you have an installment payment order and are current on the payments.
 
+  ${ collapse_template(installment_payments_explanation_template) }
+
   ${ collapse_template(set_up_installment_payment_plan) }
 fields:
   - Is there an installment payment order in place for this debt?: has_installment_payment
     datatype: yesnoradio
-under: ${ collapse_template(installment_payments_explanation_template) }
 ---
 template: set_up_installment_payment_plan
 subject: |
@@ -923,7 +948,7 @@ attachment:
           % else:
           % endif
       - "max_amount_objection": |
-          % if objection_type == "writ_of_garnishment":
+          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
           ${ already_at_maximum }
           % else:
           % endif
