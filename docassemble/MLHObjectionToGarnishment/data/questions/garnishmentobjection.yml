@@ -807,7 +807,7 @@ objects:
   - order_on_objections_to_garnishment_attachment: ALDocument.using(title="Order on Objections to Garnishment - MC 51", filename="Order on Objections to Garnishment - MC 51.pdf", enabled=True)
 ---
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, objections_to_garnishment_attachment, order_on_objections_to_garnishment_attachment], filename="Objections to Garnishment (All Forms).pdf", title="All forms to download for your records", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[instructions, objections_to_garnishment_attachment, order_on_objections_to_garnishment_attachment], filename="Objections to Garnishment (All Forms).pdf", title="All forms and instructions", enabled=True)
   - al_court_bundle: ALDocumentBundle.using(elements=[instructions, objections_to_garnishment_attachment, order_on_objections_to_garnishment_attachment], filename="Objections to Garnishment (All Forms).pdf", title="All forms", enabled=True)
 ---
 attachment:
