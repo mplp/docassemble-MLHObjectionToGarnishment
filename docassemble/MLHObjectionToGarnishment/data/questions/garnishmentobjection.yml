@@ -532,14 +532,13 @@ continue button field: reason_for_objection_info
 ---
 id: cannot_be_garnished_list
 question: |
-  Some assets and income cannot legally be garnished because they are exempt.
+  Money that cannot be garnished
 subquestion: |
-  Generally, money from these sources cannot be garnished:
+  Some assets and income cannot legally be garnished because they are exempt. Generally, money from these sources cannot be garnished:
 
   * Individual Retirement Accounts (IRAs)
   * Certain federal benefits: Social Security benefits and disability payments; Supplemental Security Income (SSI) payments; Student loan disbursements; VA Benefits
   * General Assistance Benefits: Family Independence Program (FIP) grants; Food Assistance Program (FAP); Electronic Benefits Transfers (EBT); State Disability Assistance
-  * Individual Retirement Accounts (IRAs)
   * Unemployment Compensation benefits
   * Worker's Compensation benefits
   * Cash value of life insurance policies that are payable to your spouse or children
@@ -770,6 +769,8 @@ question: |
   Complete this sentence
 fields:
   - "The writ was not properly issued or is otherwise invalid because:": invalid_writ_reason
+    input type: area
+    rows: 2
 ---
 id:
 question: |
@@ -822,7 +823,7 @@ attachment:
 ---
 code: |
   objections_to_garnishment_attachment.overflow_fields['invalid_writ_reason'].overflow_trigger = 66
-  objections_to_garnishment_attachment.overflow_fields['invalid_writ_reason'].label = "f. the writ was not properly issued or is otherwise invalid because"
+  objections_to_garnishment_attachment.overflow_fields['invalid_writ_reason'].label = "1. f. the writ was not properly issued or is otherwise invalid because"
   
   objections_to_garnishment_attachment.overflow_fields.gathered = True
 ---

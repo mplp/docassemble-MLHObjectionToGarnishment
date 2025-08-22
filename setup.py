@@ -44,16 +44,16 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MLHObjectionToGarnishment',
-      version='0.0.2',
+      version='0.0.3',
       description=('A Docassemble tool to create forms to object to garnishment in Michigan.'),
-      long_description='# docassemble.MLHObjectionToGarnishment\n\nA Docassemble tool to create forms to object to garnishment in Michigan.\n\n## Author\n\nEmily Miller, ekressmiller@lsscm.org\n\n',
+      long_description='# docassemble.MLHObjectionToGarnishment\r\n\r\nA Docassemble tool to create forms to object to garnishment in Michigan.\r\n\r\n## Author\r\n\r\nEmily Miller, ekressmiller@lsscm.org\r\n\r\n',
       long_description_content_type='text/markdown',
       author='Emily Miller',
       author_email='ekressmiller@lsscm.org',
-      license='The MIT License (MIT)',
+      license='MIT',
       url='https://docassemble.org',
       packages=find_namespace_packages(),
-      install_requires=['docassemble.AssemblyLine @ git+https://github.com/suffolklitlab/docassemble-assemblyline.git@main', 'docassemble.demo>=1.7.4', 'docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@main'],
+      install_requires=['docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main', 'docassemble.demo>=1.8.5', 'docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@main'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MLHObjectionToGarnishment/', package='docassemble.MLHObjectionToGarnishment'),
      )
