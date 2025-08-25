@@ -17,11 +17,7 @@ readme = "README.md"
 authors = [
     { name = "Emily Miller", email = "ekressmiller@lsscm.org" },
 ]
-dependencies = [
-    "docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main",
-    "docassemble.demo>=1.8.11",
-    "docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@main",
-]
+dependencies = []
 
 [project.urls]
 Homepage = "https://docassemble.org"

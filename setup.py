@@ -53,7 +53,7 @@ setup(name='docassemble.MLHObjectionToGarnishment',
       license='MIT',
       url='https://docassemble.org',
       packages=find_namespace_packages(),
-      install_requires=['docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main', 'docassemble.demo>=1.8.11', 'docassemble.mlhframework @ git+https://github.com/mplp/docassemble-mlhframework.git@main'],
+      install_requires=[],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MLHObjectionToGarnishment/', package='docassemble.MLHObjectionToGarnishment'),
      )
