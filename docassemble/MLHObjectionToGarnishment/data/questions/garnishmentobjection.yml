@@ -150,7 +150,6 @@ code: |
     is_periodic_garnishment
     reason_for_objection_info
     cannot_be_garnished_list
-    cannot_be_garnished_exceptions
   
     is_money_exempt
 
@@ -180,12 +179,22 @@ code: |
     if writ_is_invalid:
       invalid_writ_reason
 
-    if ((not is_periodic_garnishment) or (is_periodic_garnishment and not has_installment_payment)
-    or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection)):
+    if not is_periodic_garnishment:
       if not (
         is_money_exempt
         or in_process_bankruptcy
         or discharged_through_bankruptcy
+        or is_paid_in_full
+        or writ_is_invalid
+      ):
+        no_objections_exit
+  
+    if (is_periodic_garnishment and not has_installment_payment) or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection):
+      if not (
+        is_money_exempt
+        or in_process_bankruptcy
+        or discharged_through_bankruptcy
+        or already_at_maximum
         or is_paid_in_full
         or writ_is_invalid
       ):
@@ -266,9 +275,9 @@ id: more help intro screen
 question: |
   Is this tool right for you?
 subquestion: |
-  Use this tool if you received a _Request and Writ for Garnishment_ and you have a reason to object to (disagree with) the garnishment.
-
-  You can also use this tool if you received a written statement of the judgment balance from your creditor and you want to object to the balance. You can only object if you believe the balance on the statement is incorrect.
+  You can use this tool if you got a Request and Writ for Garnishment and you have a reason to object (disagree with) the garnishment.
+  
+  You can also use this tool if you got a written statement of the judgment balance from your creditor and you think the balance on the statement is incorrect.
 continue button field: substantive_intro
 ---
 id: court type choice
@@ -356,7 +365,7 @@ fields:
       (include the 'P')
     field: other_parties[0].attorney.bar_number
 ---
-id:
+id: objection_type
 question: |
   Type of objection
 subquestion: |
@@ -372,9 +381,9 @@ template: writ_or_statement_explanation_template
 subject: |
   How do I know?
 content: |
-  A **writ of garnishment** is a court order telling a garnishee to give a debtor's money to a creditor. A garnishee is a third party that has control of the debtor's money or pays the debtor. 
+  A **writ of garnishment** is a court order telling a garnishee (like your bank or your employer) to give your money to a creditor to pay for a judgment.
   
-  A **written statement** is a statement from your creditor that tells you the balance of the judgment. **You can only object if you believe the balance on the statement is incorrect.**
+  A **written statement** is something you get from your creditor if you wages are being garnished that tells you how much you still owe. You can object if you believe the amount on the statement is wrong.
 ---
 id: docket number
 question: |
@@ -495,7 +504,7 @@ template: what_is_a_garnishee_template
 subject: |
   What is a garnishee?
 content: |
-  A garnishee is a third party that has control of the debtor's money or pays the debtor. For example, a garnishee could be:
+  A garnishee is who is being asked to take your money to pay the judgment. For example, a garnishee could be:
 
     * A bank
     * An employer
@@ -519,6 +528,8 @@ template: periodic_garnishment_explanation_template
 subject: |
   What is a periodic garnishment?
 content: |
+  A periodic garnishment means that the garnishment will happen regularly until the judgment is paid off.
+  
   You will know the garnishment is periodic if your Request and Writ for Garnishment says "periodic" at the top center.
   
   [FILE Periodic-Request_for_Garnishment.PNG, 100%]
@@ -527,21 +538,21 @@ id: reason_for_objection_info
 question: |
   Reason for objection
 subquestion: |
-  The next few questions ask about why you're objecting to the garnishment.
-
-  You must have a good reason to object to the garnishment. 
-
-  You can have more than one reason for objecting.
+  The next few questions ask about why you're objecting to the garnishment. Not any reason can be a reason to object. The law lists the reasons why you can object. The tool will go through the options. You can have more than one reason for objecting.
 continue button field: reason_for_objection_info
 ---
 id: cannot_be_garnished_list
 question: |
   Money that cannot be garnished
 subquestion: |
-  Some assets and income cannot legally be garnished because they are exempt. Generally, money from these sources cannot be garnished:
+  Some assets and income cannot legally be garnished because they are exempt. Generally, if you receive money from these sources, it cannot be garnished:
 
   * Individual Retirement Accounts (IRAs)
-  * Certain federal benefits: Social Security benefits and disability payments; Supplemental Security Income (SSI) payments; Student loan disbursements; VA Benefits
+  * Certain federal benefits:
+      * Social Security benefits and disability payments;
+      * Supplemental Security Income (SSI) payments;
+      * Student loan disbursements;
+      * VA Benefits
   * General Assistance Benefits: Family Independence Program (FIP) grants; Food Assistance Program (FAP); Electronic Benefits Transfers (EBT); State Disability Assistance
   * Unemployment Compensation benefits
   * Worker's Compensation benefits
@@ -552,17 +563,6 @@ subquestion: |
   * Pensions covered by ERISA
 
 continue button field: cannot_be_garnished_list
----
-id: cannot_be_garnished_exceptions
-question: |
-  There are some exceptions to that list
-subquestion: |
-  For example:
-
-  * Social security disability and retirement benefits can be garnished to pay federal taxes, child support, and alimony
-  * Pension income can be garnished once it's in your bank account
-  
-continue button field: cannot_be_garnished_exceptions
 ---
 # Overriding from AL to specify that they need to receive mail
 id: your address
@@ -585,7 +585,7 @@ id: is_money_exempt
 question: |
   Exempt money
 fields:
-  - Are you objecting because you think the money being garnished is exempt?: is_money_exempt
+  - Are you objecting because you think the money being garnished is exempt (can't be garnished)?: is_money_exempt
     datatype: yesnoradio
 ---
 id: in_process_bankruptcy
@@ -755,7 +755,7 @@ question: |
 subquestion: |
   For example, a writ was not properly issued if it was issued based on false information. 
 
-  A garnishment could be invalid if, for example, the interest, costs, or judgment amount are inaccurate. The garnishment is also invalid if it is expired. A periodic garnishment expires 182 days after it was issued. A nonperiodic garnishment expires 91 days after it was issued.
+  A garnishment could be invalid if, for example, the interest, costs, or judgment amount are inaccurate. The garnishment is also invalid if it is expired. A writ for periodic garnishment does  not expire. It is effective until the balance of the judgement, interest, and costs are paid. But, a nonperiodic garnishment expires 18 days after it was issued.
 
 fields:
   - Was the writ **not properly issued** or **invalid**?: writ_is_invalid
