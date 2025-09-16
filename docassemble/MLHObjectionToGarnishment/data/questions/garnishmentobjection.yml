@@ -142,10 +142,11 @@ code: |
     else:
       fourteen_day_warning
 
-    nav.set_section("signpost_garnishee_info")
-    garnishees[0].name.first
-    garnishees[0].address.address
+  nav.set_section("signpost_garnishee_info")
+  garnishees[0].name.first
+  garnishees[0].address.address
 
+  if objection_type == "writ_of_garnishment":
     nav.set_section("signpost_objection_info")
     is_periodic_garnishment
     reason_for_objection_info
@@ -545,23 +546,7 @@ id: cannot_be_garnished_list
 question: |
   Money that cannot be garnished
 subquestion: |
-  Some assets and income cannot legally be garnished because they are exempt. Generally, if you receive money from these sources, it cannot be garnished:
-
-  * Individual Retirement Accounts (IRAs)
-  * Certain federal benefits:
-      * Social Security benefits and disability payments;
-      * Supplemental Security Income (SSI) payments;
-      * Student loan disbursements;
-      * VA Benefits
-  * General Assistance Benefits: Family Independence Program (FIP) grants; Food Assistance Program (FAP); Electronic Benefits Transfers (EBT); State Disability Assistance
-  * Unemployment Compensation benefits
-  * Worker's Compensation benefits
-  * Cash value of life insurance policies that are payable to your spouse or children
-  * Income benefits under the Michigan Civil Service Act
-  * Income benefits under the Michigan Retirement Act
-  * U.S. Civil Servant Retirement benefits
-  * Pensions covered by ERISA
-
+  Some assets and income can't be garnished because they are protected by law. To learn what money is protected, please read [Income Protected from Garnishment](https://michiganlegalhelp.org/resources/money-debt-and-consumer-issues/income-protected-from-garnishment).
 continue button field: cannot_be_garnished_list
 ---
 # Overriding from AL to specify that they need to receive mail
@@ -893,13 +878,9 @@ attachment:
             ${ "" }
           % endif
       - "garnishees1_address_block": |
-          % if objection_type == "writ_of_garnishment":
           ${ garnishees[0].name_full() }
           ${ garnishees[0].address.line_one() }
           ${ garnishees[0].address.line_two() }
-          % else:
-          ${ "" }
-          % endif
       - "objects_to_writ": |
           % if objection_type == "writ_of_garnishment":
           True
@@ -1089,10 +1070,6 @@ attachment:
             ${ "" }
           % endif
       - "garnishees1_address_block": |
-          % if objection_type == "writ_of_garnishment":
           ${ garnishees[0].name_full() }
           ${ garnishees[0].address.line_one() }
           ${ garnishees[0].address.line_two() }
-          % else:
-          ${ "" }
-          % endif
