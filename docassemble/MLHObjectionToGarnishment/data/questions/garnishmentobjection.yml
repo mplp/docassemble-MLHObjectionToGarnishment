@@ -251,6 +251,656 @@ code: |
   is_paid_in_full
 
   has_installment_payment_interview_order = True
+---
+code: |
+  if other_parties[0].has_attorney:
+    other_parties[0].attorney.name.first
+    other_parties[0].attorney.address.address
+    other_parties[0].attorney.phone_number
+
+  interview_order_other_parties_attorney = True
+---
+code: |
+  if objection_type == "written_statement":
+    invalidate('docket_number')
+    invalidate('date_of_issue')
+    invalidate('service_date')
+    undefine('more_than_fourteen_days_warning')
+    undefine('fourteen_day_warning')
+    invalidate('is_periodic_garnishment')
+    undefine('reason_for_objection_info')
+    undefine('cannot_be_garnished_list')
+    invalidate('is_money_exempt')
+    invalidate('in_process_bankruptcy')
+    invalidate('bankruptcy_case_number')
+    invalidate('discharged_through_bankruptcy')
+    invalidate('writ_is_invalid')
+    invalidate('invalid_writ_reason')
+    ## has_installment_payment_interview_order ##
+    undefine('has_installment_payment_interview_order')
+    invalidate('has_installment_payment')
+    invalidate('is_current')
+    invalidate('not_current_objection')
+    invalidate('already_at_maximum')
+    invalidate('is_paid_in_full')
+    ## installment_payment_interview_order ##
+    undefine('installment_payment_interview_order')
+    invalidate('installment_order_date')
+    invalidate('court_ordered')
+    invalidate('corrected_court_ordered')
+    invalidate('installment_case_number')
+    invalidate('is_same_case_number')
+    invalidate('installment_case_number')
+    invalidate('attach_installment_order')
+  
+  elif objection_type == "writ_of_garnishment":
+    undefine('written_statement_warning')
+    invalidate('docket_number')
+    invalidate('service_date')
+
+  objection_type_reset = True
+---
+code: |
+  if objection_type == "writ_of_garnishment":
+    docket_number
+    date_of_issue
+    service_date
+
+    if days_elapsed.days > 14:
+      more_than_fourteen_days_warning
+    else:
+      fourteen_day_warning
+
+    is_periodic_garnishment
+    reason_for_objection_info
+    cannot_be_garnished_list
+    is_money_exempt
+
+    if is_periodic_garnishment:
+      in_process_bankruptcy
+      if in_process_bankruptcy:
+        bankruptcy_case_number
+        ## has_installment_payment_interview_order begin ##
+        has_installment_payment
+        if has_installment_payment:
+          is_current
+          if is_current:
+            ## installment_payment_interview_order ##
+            installment_order_date 
+            court_ordered
+            if not court_ordered:
+              corrected_court_ordered
+              installment_case_number
+            if court_ordered:
+              is_same_case_number
+              if not is_same_case_number:
+                installment_case_number
+            attach_installment_order  
+          if not is_current:
+            not_current_objection
+            if not_current_objection:
+              ## installment_payment_interview_order begin ##
+              installment_order_date 
+              court_ordered
+              if not court_ordered:
+                corrected_court_ordered
+                installment_case_number
+              if court_ordered:
+                is_same_case_number
+                if not is_same_case_number:
+                  installment_case_number
+              attach_installment_order
+              ## installment_payment_interview_order end ##
+        already_at_maximum
+        is_paid_in_full
+        ## has_installment_payment_interview_order end ##
+
+      if not in_process_bankruptcy:
+        discharged_through_bankruptcy
+        if discharged_through_bankruptcy:
+          bankruptcy_case_number
+        ## has_installment_payment_interview_order begin ##
+        has_installment_payment
+        if has_installment_payment:
+          is_current
+          if is_current:
+            ## installment_payment_interview_order ##
+            installment_order_date 
+            court_ordered
+            if not court_ordered:
+              corrected_court_ordered
+              installment_case_number
+            if court_ordered:
+              is_same_case_number
+              if not is_same_case_number:
+                installment_case_number
+            attach_installment_order  
+          if not is_current:
+            not_current_objection
+            if not_current_objection:
+              ## installment_payment_interview_order begin ##
+              installment_order_date 
+              court_ordered
+              if not court_ordered:
+                corrected_court_ordered
+                installment_case_number
+              if court_ordered:
+                is_same_case_number
+                if not is_same_case_number:
+                  installment_case_number
+              attach_installment_order
+              ## installment_payment_interview_order end ##
+        already_at_maximum
+        is_paid_in_full
+        ## has_installment_payment_interview_order end ##
+
+    elif not is_periodic_garnishment:
+      in_process_bankruptcy
+      if in_process_bankruptcy:
+        bankruptcy_case_number
+        is_paid_in_full
+      if not in_process_bankruptcy:
+        discharged_through_bankruptcy
+        if discharged_through_bankruptcy:
+          bankruptcy_case_number  
+        is_paid_in_full
+    
+    writ_is_invalid
+    if writ_is_invalid:
+      invalid_writ_reason
+
+    if not is_periodic_garnishment:
+      if not (
+        is_money_exempt
+        or in_process_bankruptcy
+        or discharged_through_bankruptcy
+        or is_paid_in_full
+        or writ_is_invalid
+      ):
+        no_objections_exit
+  
+    if (is_periodic_garnishment and not has_installment_payment) or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection):
+      if not (
+        is_money_exempt
+        or in_process_bankruptcy
+        or discharged_through_bankruptcy
+        or already_at_maximum
+        or is_paid_in_full
+        or writ_is_invalid
+      ):
+        no_objections_exit
+  
+  elif objection_type == "written_statement":
+    written_statement_warning
+    docket_number
+    service_date
+
+  objection_type_regather = True
+---
+code: |
+  if objection_type == "writ_of_garnishment":
+    invalidate('in_process_bankruptcy')
+    invalidate('is_paid_in_full')
+
+    if is_periodic_garnishment:
+      ## has_installment_payment_interview_order ##
+      undefine('has_installment_payment_interview_order')
+      invalidate('has_installment_payment')
+      invalidate('is_current')
+      invalidate('not_current_objection')
+      invalidate('already_at_maximum')
+      ## installment_payment_interview_order ##
+      undefine('installment_payment_interview_order')
+      invalidate('installment_order_date')
+      invalidate('court_ordered')
+      invalidate('corrected_court_ordered')
+      invalidate('installment_case_number')
+      invalidate('is_same_case_number')
+      invalidate('installment_case_number')
+      invalidate('attach_installment_order')
+
+      if not in_process_bankruptcy:
+        invalidate('bankruptcy_case_number')
+      elif in_process_bankruptcy:
+        invalidate('discharged_through_bankruptcy')
+        invalidate('bankruptcy_case_number')
+
+    elif not is_periodic_garnishment:
+
+      if not in_process_bankruptcy:
+        invalidate('bankruptcy_case_number')
+      elif in_process_bankruptcy:
+        invalidate('discharged_through_bankruptcy')
+        invalidate('bankruptcy_case_number')
+
+  periodic_garnishment_reset = True
+---
+code: |
+  if is_periodic_garnishment:
+    in_process_bankruptcy
+
+    if not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
+        bankruptcy_case_number
+
+      ## has_installment_payment_interview_order begin ##
+      has_installment_payment
+      if has_installment_payment:
+        is_current
+        if is_current:
+          ## installment_payment_interview_order ##
+          installment_order_date 
+          court_ordered
+          if not court_ordered:
+            corrected_court_ordered
+            installment_case_number
+          if court_ordered:
+            is_same_case_number
+            if not is_same_case_number:
+              installment_case_number
+          attach_installment_order  
+        if not is_current:
+          not_current_objection
+          if not_current_objection:
+            ## installment_payment_interview_order begin ##
+            installment_order_date 
+            court_ordered
+            if not court_ordered:
+              corrected_court_ordered
+              installment_case_number
+            if court_ordered:
+              is_same_case_number
+              if not is_same_case_number:
+                installment_case_number
+            attach_installment_order
+            ## installment_payment_interview_order end ##
+      already_at_maximum
+      is_paid_in_full
+      ## has_installment_payment_interview_order end ##
+
+    elif in_process_bankruptcy:
+      bankruptcy_case_number
+      ## has_installment_payment_interview_order begin ##
+      has_installment_payment
+      if has_installment_payment:
+        is_current
+        if is_current:
+          ## installment_payment_interview_order ##
+          installment_order_date 
+          court_ordered
+          if not court_ordered:
+            corrected_court_ordered
+            installment_case_number
+          if court_ordered:
+            is_same_case_number
+            if not is_same_case_number:
+              installment_case_number
+          attach_installment_order  
+        if not is_current:
+          not_current_objection
+          if not_current_objection:
+            ## installment_payment_interview_order begin ##
+            installment_order_date 
+            court_ordered
+            if not court_ordered:
+              corrected_court_ordered
+              installment_case_number
+            if court_ordered:
+              is_same_case_number
+              if not is_same_case_number:
+                installment_case_number
+            attach_installment_order
+            ## installment_payment_interview_order end ##
+      already_at_maximum
+      is_paid_in_full
+      ## has_installment_payment_interview_order end ##
+
+  elif not is_periodic_garnishment:
+    in_process_bankruptcy
+    if not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
+        bankruptcy_case_number
+    elif in_process_bankruptcy:
+      bankruptcy_case_number
+    is_paid_in_full
+
+  periodic_garnishment_regather = True
+---
+code: |
+  if objection_type == "writ_of_garnishment":
+
+    invalidate('is_paid_in_full')
+
+    if is_periodic_garnishment:
+      ## has_installment_payment_interview_order ##
+      undefine('has_installment_payment_interview_order')
+      invalidate('has_installment_payment')
+      invalidate('is_current')
+      invalidate('not_current_objection')
+      invalidate('already_at_maximum')
+      ## installment_payment_interview_order ##
+      undefine('installment_payment_interview_order')
+      invalidate('installment_order_date')
+      invalidate('court_ordered')
+      invalidate('corrected_court_ordered')
+      invalidate('installment_case_number')
+      invalidate('is_same_case_number')
+      invalidate('installment_case_number')
+      invalidate('attach_installment_order')
+
+      if not in_process_bankruptcy:
+        invalidate('bankruptcy_case_number')
+      elif in_process_bankruptcy:
+        invalidate('discharged_through_bankruptcy')
+        invalidate('bankruptcy_case_number')
+
+    elif not is_periodic_garnishment:
+
+      if not in_process_bankruptcy:
+        invalidate('bankruptcy_case_number')
+      elif in_process_bankruptcy:
+        invalidate('discharged_through_bankruptcy')
+        invalidate('bankruptcy_case_number')
+
+  in_process_bankruptcy_reset = True
+---
+code: |
+  if objection_type == "writ_of_garnishment":
+
+    if is_periodic_garnishment:
+
+      if not in_process_bankruptcy:
+        discharged_through_bankruptcy
+        if discharged_through_bankruptcy:
+          bankruptcy_case_number
+
+        ## has_installment_payment_interview_order begin ##
+        has_installment_payment
+        if has_installment_payment:
+          is_current
+          if is_current:
+            ## installment_payment_interview_order ##
+            installment_order_date 
+            court_ordered
+            if not court_ordered:
+              corrected_court_ordered
+              installment_case_number
+            if court_ordered:
+              is_same_case_number
+              if not is_same_case_number:
+                installment_case_number
+            attach_installment_order  
+          if not is_current:
+            not_current_objection
+            if not_current_objection:
+              ## installment_payment_interview_order begin ##
+              installment_order_date 
+              court_ordered
+              if not court_ordered:
+                corrected_court_ordered
+                installment_case_number
+              if court_ordered:
+                is_same_case_number
+                if not is_same_case_number:
+                  installment_case_number
+              attach_installment_order
+              ## installment_payment_interview_order end ##
+        already_at_maximum
+        is_paid_in_full
+        ## has_installment_payment_interview_order end ##
+
+      elif in_process_bankruptcy:
+        bankruptcy_case_number
+        ## has_installment_payment_interview_order begin ##
+        has_installment_payment
+        if has_installment_payment:
+          is_current
+          if is_current:
+            ## installment_payment_interview_order ##
+            installment_order_date 
+            court_ordered
+            if not court_ordered:
+              corrected_court_ordered
+              installment_case_number
+            if court_ordered:
+              is_same_case_number
+              if not is_same_case_number:
+                installment_case_number
+            attach_installment_order  
+          if not is_current:
+            not_current_objection
+            if not_current_objection:
+              ## installment_payment_interview_order begin ##
+              installment_order_date 
+              court_ordered
+              if not court_ordered:
+                corrected_court_ordered
+                installment_case_number
+              if court_ordered:
+                is_same_case_number
+                if not is_same_case_number:
+                  installment_case_number
+              attach_installment_order
+              ## installment_payment_interview_order end ##
+        already_at_maximum
+        is_paid_in_full
+        ## has_installment_payment_interview_order end ##
+
+    elif not is_periodic_garnishment:
+
+      if not in_process_bankruptcy:
+        discharged_through_bankruptcy
+        if discharged_through_bankruptcy:
+          bankruptcy_case_number
+      elif in_process_bankruptcy:
+        bankruptcy_case_number
+      is_paid_in_full
+
+  in_process_bankruptcy_regather = True
+---
+code: |
+  if not discharged_through_bankruptcy:
+    invalidate('bankruptcy_case_number')
+
+  discharged_through_bankruptcy_reset = True
+---
+code: |
+  if discharged_through_bankruptcy:
+    bankruptcy_case_number
+  
+  discharged_through_bankruptcy_regather = True
+---
+code: |
+  if not has_installment_payment:
+    invalidate('has_installment_payment')
+    invalidate('is_current')
+    invalidate('not_current_objection')
+    ## installment_payment_interview_order ##
+    undefine('installment_payment_interview_order')
+    invalidate('installment_order_date')
+    invalidate('court_ordered')
+    invalidate('corrected_court_ordered')
+    invalidate('installment_case_number')
+    invalidate('is_same_case_number')
+    invalidate('installment_case_number')
+    invalidate('attach_installment_order')
+
+  has_installment_payment_reset = True
+---
+code: |
+  if has_installment_payment:
+    is_current
+    if is_current:
+      ## installment_payment_interview_order begin ##
+      installment_order_date 
+      court_ordered
+      if not court_ordered:
+        corrected_court_ordered
+        installment_case_number
+      if court_ordered:
+        is_same_case_number
+        if not is_same_case_number:
+          installment_case_number
+      attach_installment_order
+      ## installment_payment_interview_order end ##
+    if not is_current:
+      not_current_objection
+      if not_current_objection:
+        ## installment_payment_interview_order begin ##
+        installment_order_date 
+        court_ordered
+        if not court_ordered:
+          corrected_court_ordered
+          installment_case_number
+        if court_ordered:
+          is_same_case_number
+          if not is_same_case_number:
+            installment_case_number
+        attach_installment_order
+        ## installment_payment_interview_order end ##
+    
+  has_installment_payment_regather = True
+---
+code: |
+  if is_current:
+    invalidate('not_current_objection')
+  
+  ## installment_payment_interview_order ##
+  undefine('installment_payment_interview_order')
+  invalidate('installment_order_date')
+  invalidate('court_ordered')
+  invalidate('corrected_court_ordered')
+  invalidate('installment_case_number')
+  invalidate('is_same_case_number')
+  invalidate('installment_case_number')
+  invalidate('attach_installment_order')
+
+  is_current_reset = True
+---
+code: |
+  if is_current:
+    ## installment_payment_interview_order begin ##
+    installment_order_date 
+    court_ordered
+    if not court_ordered:
+      corrected_court_ordered
+      installment_case_number
+    if court_ordered:
+      is_same_case_number
+      if not is_same_case_number:
+        installment_case_number
+    attach_installment_order
+    ## installment_payment_interview_order end ##
+  if not is_current:
+    not_current_objection
+    if not_current_objection:
+      ## installment_payment_interview_order begin ##
+      installment_order_date 
+      court_ordered
+      if not court_ordered:
+        corrected_court_ordered
+        installment_case_number
+      if court_ordered:
+        is_same_case_number
+        if not is_same_case_number:
+          installment_case_number
+      attach_installment_order
+      ## installment_payment_interview_order end ##
+
+  is_current_regather = True
+---
+code: |
+  if not not_current_objection:
+    invalidate('installment_payment_interview_order')
+
+    ## installment_payment_interview_order ##
+    undefine('installment_payment_interview_order')
+    invalidate('installment_order_date')
+    invalidate('court_ordered')
+    invalidate('corrected_court_ordered')
+    invalidate('installment_case_number')
+    invalidate('is_same_case_number')
+    invalidate('installment_case_number')
+    invalidate('attach_installment_order')
+
+  not_current_objection_reset = True
+---
+code: |
+  if not_current_objection:
+    ## installment_payment_interview_order begin ##
+    installment_order_date 
+    court_ordered
+    if not court_ordered:
+      corrected_court_ordered
+      installment_case_number
+    if court_ordered:
+      is_same_case_number
+      if not is_same_case_number:
+        installment_case_number
+    attach_installment_order
+    ## installment_payment_interview_order end ##
+
+  not_current_objection_regather = True
+---
+code: |
+  if objection_type == "writ_of_garnishment":
+
+    if defined('is_periodic_garnishment'):
+
+      if not is_periodic_garnishment:
+        has_objection = False
+
+        if defined('is_money_exempt') and is_money_exempt:
+          has_objection = True
+
+        if defined('in_process_bankruptcy') and in_process_bankruptcy:
+          has_objection = True
+
+        if defined('discharged_through_bankruptcy') and discharged_through_bankruptcy:
+          has_objection = True
+
+        if defined('is_paid_in_full') and is_paid_in_full:
+          has_objection = True
+
+        if defined('writ_is_invalid') and writ_is_invalid:
+          has_objection = True
+
+        if not has_objection:
+          force_ask('no_objections_exit')
+
+      if is_periodic_garnishment:
+        has_objection = False
+
+        if defined('is_money_exempt') and is_money_exempt:
+          has_objection = True
+
+        if defined('in_process_bankruptcy') and in_process_bankruptcy:
+          has_objection = True
+
+        if defined('discharged_through_bankruptcy') and discharged_through_bankruptcy:
+          has_objection = True
+
+        if defined('already_at_maximum') and already_at_maximum:
+          has_objection = True
+
+        if defined('is_paid_in_full') and is_paid_in_full:
+          has_objection = True
+
+        if defined('writ_is_invalid') and writ_is_invalid:
+          has_objection = True
+
+        if defined('has_installment_payment') and has_installment_payment:
+          if defined('is_current') and is_current:
+            has_objection = True
+          if defined('not_current_objection') and not_current_objection:
+            has_objection = True
+
+        if not has_objection:
+          force_ask('no_objections_exit')
+
+  no_objections_exit_recheck = True
 ---  
 id: MLH intro landing FirstScreen
 question: |
