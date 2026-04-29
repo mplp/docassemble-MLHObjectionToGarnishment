@@ -54,7 +54,7 @@ code: |
   MLH_materials_included = False
   MLH_form_type = "forms"
 ---
-template: MLH_welcome_message     
+template: MLH_welcome_message
 content: |
   Welcome! This tool will help you prepare the form to file an Objection to Garnishment.
 ---
@@ -114,7 +114,7 @@ code: |
   users[0].name.first
   users[0].address.address
   users[0].phone_number
-  
+
   nav.set_section("signpost_case_info")
   court_type
   county_choice
@@ -132,7 +132,7 @@ code: |
     other_parties[0].attorney.phone_number
 
   objection_type
-  
+
   if objection_type == "writ_of_garnishment":
     docket_number
     date_of_issue
@@ -151,7 +151,7 @@ code: |
     is_periodic_garnishment
     reason_for_objection_info
     cannot_be_garnished_list
-  
+
     is_money_exempt
 
     if is_periodic_garnishment:
@@ -175,7 +175,7 @@ code: |
         if discharged_through_bankruptcy:
           bankruptcy_case_number
         is_paid_in_full
-  
+
     writ_is_invalid
     if writ_is_invalid:
       invalid_writ_reason
@@ -189,7 +189,7 @@ code: |
         or writ_is_invalid
       ):
         no_objections_exit
-  
+
     if (is_periodic_garnishment and not has_installment_payment) or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection):
       if not (
         is_money_exempt
@@ -292,7 +292,7 @@ code: |
     invalidate('is_same_case_number')
     invalidate('installment_case_number')
     invalidate('attach_installment_order')
-  
+
   elif objection_type == "writ_of_garnishment":
     undefine('written_statement_warning')
     invalidate('docket_number')
@@ -320,79 +320,13 @@ code: |
       in_process_bankruptcy
       if in_process_bankruptcy:
         bankruptcy_case_number
-        ## has_installment_payment_interview_order begin ##
-        has_installment_payment
-        if has_installment_payment:
-          is_current
-          if is_current:
-            ## installment_payment_interview_order ##
-            installment_order_date 
-            court_ordered
-            if not court_ordered:
-              corrected_court_ordered
-              installment_case_number
-            if court_ordered:
-              is_same_case_number
-              if not is_same_case_number:
-                installment_case_number
-            attach_installment_order  
-          if not is_current:
-            not_current_objection
-            if not_current_objection:
-              ## installment_payment_interview_order begin ##
-              installment_order_date 
-              court_ordered
-              if not court_ordered:
-                corrected_court_ordered
-                installment_case_number
-              if court_ordered:
-                is_same_case_number
-                if not is_same_case_number:
-                  installment_case_number
-              attach_installment_order
-              ## installment_payment_interview_order end ##
-        already_at_maximum
-        is_paid_in_full
-        ## has_installment_payment_interview_order end ##
+        has_installment_payment_interview_order
 
       if not in_process_bankruptcy:
         discharged_through_bankruptcy
         if discharged_through_bankruptcy:
           bankruptcy_case_number
-        ## has_installment_payment_interview_order begin ##
-        has_installment_payment
-        if has_installment_payment:
-          is_current
-          if is_current:
-            ## installment_payment_interview_order ##
-            installment_order_date 
-            court_ordered
-            if not court_ordered:
-              corrected_court_ordered
-              installment_case_number
-            if court_ordered:
-              is_same_case_number
-              if not is_same_case_number:
-                installment_case_number
-            attach_installment_order  
-          if not is_current:
-            not_current_objection
-            if not_current_objection:
-              ## installment_payment_interview_order begin ##
-              installment_order_date 
-              court_ordered
-              if not court_ordered:
-                corrected_court_ordered
-                installment_case_number
-              if court_ordered:
-                is_same_case_number
-                if not is_same_case_number:
-                  installment_case_number
-              attach_installment_order
-              ## installment_payment_interview_order end ##
-        already_at_maximum
-        is_paid_in_full
-        ## has_installment_payment_interview_order end ##
+        has_installment_payment_interview_order
 
     elif not is_periodic_garnishment:
       in_process_bankruptcy
@@ -418,7 +352,7 @@ code: |
         or writ_is_invalid
       ):
         no_objections_exit
-  
+
     if (is_periodic_garnishment and not has_installment_payment) or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection):
       if not (
         is_money_exempt
@@ -429,7 +363,7 @@ code: |
         or writ_is_invalid
       ):
         no_objections_exit
-  
+
   elif objection_type == "written_statement":
     written_statement_warning
     docket_number
@@ -440,6 +374,8 @@ code: |
 code: |
   if objection_type == "writ_of_garnishment":
     invalidate('in_process_bankruptcy')
+    invalidate('discharged_through_bankruptcy')
+    invalidate('bankruptcy_case_number')
     invalidate('is_paid_in_full')
 
     if is_periodic_garnishment:
@@ -459,19 +395,8 @@ code: |
       invalidate('installment_case_number')
       invalidate('attach_installment_order')
 
-      if not in_process_bankruptcy:
-        invalidate('bankruptcy_case_number')
-      elif in_process_bankruptcy:
-        invalidate('discharged_through_bankruptcy')
-        invalidate('bankruptcy_case_number')
-
     elif not is_periodic_garnishment:
-
-      if not in_process_bankruptcy:
-        invalidate('bankruptcy_case_number')
-      elif in_process_bankruptcy:
-        invalidate('discharged_through_bankruptcy')
-        invalidate('bankruptcy_case_number')
+      pass
 
   periodic_garnishment_reset = True
 ---
@@ -484,77 +409,11 @@ code: |
       if discharged_through_bankruptcy:
         bankruptcy_case_number
 
-      ## has_installment_payment_interview_order begin ##
-      has_installment_payment
-      if has_installment_payment:
-        is_current
-        if is_current:
-          ## installment_payment_interview_order ##
-          installment_order_date 
-          court_ordered
-          if not court_ordered:
-            corrected_court_ordered
-            installment_case_number
-          if court_ordered:
-            is_same_case_number
-            if not is_same_case_number:
-              installment_case_number
-          attach_installment_order  
-        if not is_current:
-          not_current_objection
-          if not_current_objection:
-            ## installment_payment_interview_order begin ##
-            installment_order_date 
-            court_ordered
-            if not court_ordered:
-              corrected_court_ordered
-              installment_case_number
-            if court_ordered:
-              is_same_case_number
-              if not is_same_case_number:
-                installment_case_number
-            attach_installment_order
-            ## installment_payment_interview_order end ##
-      already_at_maximum
-      is_paid_in_full
-      ## has_installment_payment_interview_order end ##
+      has_installment_payment_interview_order
 
     elif in_process_bankruptcy:
       bankruptcy_case_number
-      ## has_installment_payment_interview_order begin ##
-      has_installment_payment
-      if has_installment_payment:
-        is_current
-        if is_current:
-          ## installment_payment_interview_order ##
-          installment_order_date 
-          court_ordered
-          if not court_ordered:
-            corrected_court_ordered
-            installment_case_number
-          if court_ordered:
-            is_same_case_number
-            if not is_same_case_number:
-              installment_case_number
-          attach_installment_order  
-        if not is_current:
-          not_current_objection
-          if not_current_objection:
-            ## installment_payment_interview_order begin ##
-            installment_order_date 
-            court_ordered
-            if not court_ordered:
-              corrected_court_ordered
-              installment_case_number
-            if court_ordered:
-              is_same_case_number
-              if not is_same_case_number:
-                installment_case_number
-            attach_installment_order
-            ## installment_payment_interview_order end ##
-      already_at_maximum
-      is_paid_in_full
-      ## has_installment_payment_interview_order end ##
+      has_installment_payment_interview_order
 
   elif not is_periodic_garnishment:
     in_process_bankruptcy
@@ -616,77 +475,11 @@ code: |
         if discharged_through_bankruptcy:
           bankruptcy_case_number
 
-        ## has_installment_payment_interview_order begin ##
-        has_installment_payment
-        if has_installment_payment:
-          is_current
-          if is_current:
-            ## installment_payment_interview_order ##
-            installment_order_date 
-            court_ordered
-            if not court_ordered:
-              corrected_court_ordered
-              installment_case_number
-            if court_ordered:
-              is_same_case_number
-              if not is_same_case_number:
-                installment_case_number
-            attach_installment_order  
-          if not is_current:
-            not_current_objection
-            if not_current_objection:
-              ## installment_payment_interview_order begin ##
-              installment_order_date 
-              court_ordered
-              if not court_ordered:
-                corrected_court_ordered
-                installment_case_number
-              if court_ordered:
-                is_same_case_number
-                if not is_same_case_number:
-                  installment_case_number
-              attach_installment_order
-              ## installment_payment_interview_order end ##
-        already_at_maximum
-        is_paid_in_full
-        ## has_installment_payment_interview_order end ##
+        has_installment_payment_interview_order
 
       elif in_process_bankruptcy:
         bankruptcy_case_number
-        ## has_installment_payment_interview_order begin ##
-        has_installment_payment
-        if has_installment_payment:
-          is_current
-          if is_current:
-            ## installment_payment_interview_order ##
-            installment_order_date 
-            court_ordered
-            if not court_ordered:
-              corrected_court_ordered
-              installment_case_number
-            if court_ordered:
-              is_same_case_number
-              if not is_same_case_number:
-                installment_case_number
-            attach_installment_order  
-          if not is_current:
-            not_current_objection
-            if not_current_objection:
-              ## installment_payment_interview_order begin ##
-              installment_order_date 
-              court_ordered
-              if not court_ordered:
-                corrected_court_ordered
-                installment_case_number
-              if court_ordered:
-                is_same_case_number
-                if not is_same_case_number:
-                  installment_case_number
-              attach_installment_order
-              ## installment_payment_interview_order end ##
-        already_at_maximum
-        is_paid_in_full
-        ## has_installment_payment_interview_order end ##
+        has_installment_payment_interview_order
 
     elif not is_periodic_garnishment:
 
@@ -709,12 +502,11 @@ code: |
 code: |
   if discharged_through_bankruptcy:
     bankruptcy_case_number
-  
+
   discharged_through_bankruptcy_regather = True
 ---
 code: |
   if not has_installment_payment:
-    invalidate('has_installment_payment')
     invalidate('is_current')
     invalidate('not_current_objection')
     ## installment_payment_interview_order ##
@@ -733,40 +525,18 @@ code: |
   if has_installment_payment:
     is_current
     if is_current:
-      ## installment_payment_interview_order begin ##
-      installment_order_date 
-      court_ordered
-      if not court_ordered:
-        corrected_court_ordered
-        installment_case_number
-      if court_ordered:
-        is_same_case_number
-        if not is_same_case_number:
-          installment_case_number
-      attach_installment_order
-      ## installment_payment_interview_order end ##
+      installment_payment_interview_order
     if not is_current:
       not_current_objection
       if not_current_objection:
-        ## installment_payment_interview_order begin ##
-        installment_order_date 
-        court_ordered
-        if not court_ordered:
-          corrected_court_ordered
-          installment_case_number
-        if court_ordered:
-          is_same_case_number
-          if not is_same_case_number:
-            installment_case_number
-        attach_installment_order
-        ## installment_payment_interview_order end ##
+        installment_payment_interview_order
     
   has_installment_payment_regather = True
 ---
 code: |
   if is_current:
     invalidate('not_current_objection')
-  
+
   ## installment_payment_interview_order ##
   undefine('installment_payment_interview_order')
   invalidate('installment_order_date')
@@ -781,33 +551,11 @@ code: |
 ---
 code: |
   if is_current:
-    ## installment_payment_interview_order begin ##
-    installment_order_date 
-    court_ordered
-    if not court_ordered:
-      corrected_court_ordered
-      installment_case_number
-    if court_ordered:
-      is_same_case_number
-      if not is_same_case_number:
-        installment_case_number
-    attach_installment_order
-    ## installment_payment_interview_order end ##
+    installment_payment_interview_order
   if not is_current:
     not_current_objection
     if not_current_objection:
-      ## installment_payment_interview_order begin ##
-      installment_order_date 
-      court_ordered
-      if not court_ordered:
-        corrected_court_ordered
-        installment_case_number
-      if court_ordered:
-        is_same_case_number
-        if not is_same_case_number:
-          installment_case_number
-      attach_installment_order
-      ## installment_payment_interview_order end ##
+      installment_payment_interview_order
 
   is_current_regather = True
 ---
@@ -829,18 +577,7 @@ code: |
 ---
 code: |
   if not_current_objection:
-    ## installment_payment_interview_order begin ##
-    installment_order_date 
-    court_ordered
-    if not court_ordered:
-      corrected_court_ordered
-      installment_case_number
-    if court_ordered:
-      is_same_case_number
-      if not is_same_case_number:
-        installment_case_number
-    attach_installment_order
-    ## installment_payment_interview_order end ##
+    installment_payment_interview_order
 
   not_current_objection_regather = True
 ---
@@ -901,21 +638,21 @@ code: |
           force_ask('no_objections_exit')
 
   no_objections_exit_recheck = True
----  
+---
 id: MLH intro landing FirstScreen
 question: |
   ${ MLH_interview_short_title }
 subquestion: |
   ${ MLH_welcome_message }
-  
+
   It will probably take about **${ MLH_time_min } to ${ MLH_time_max } minutes** to answer all the questions.
   % if MLH_materials_included:
-  
+
     To fill out your forms **you will need:**
     
     ${ MLH_materials }
   % endif
-  
+
   Your personalized ${ MLH_form_type } will be ready after you answer all the questions. 
   % if MLH_instructions_included:
     You will also get instructions for what to do next with your ${ MLH_form_type }.
@@ -927,7 +664,7 @@ question: |
   Is this tool right for you?
 subquestion: |
   You can use this tool if you got a Request and Writ for Garnishment and you have a reason to object (disagree with) the garnishment.
-  
+
   You can also use this tool if you got a written statement of the judgment balance from your creditor and you think the balance on the statement is incorrect.
 continue button field: substantive_intro
 ---
@@ -952,7 +689,7 @@ content: |
   **District Courts** handle cases involving $25,000 or less. This includes small claims cases and most eviction, land contract, and debt collection cases.
 
   **Circuit Courts** handle:
-  
+
   * domestic relations cases such as divorce, custody, and paternity
   * personal protection orders
   * some other cases that involve more than $25,000
@@ -1006,8 +743,7 @@ id: lawyer name and bar
 generic object: ALPeopleList
 question: |
   What is the lawyer's name and bar number?
-subquestion:
-  ${ collapse_template(help_user_find_bar_number_template) }
+subquestion: ${ collapse_template(help_user_find_bar_number_template) }
 fields:
   - code: |
       other_parties[0].attorney.name_fields()
@@ -1033,7 +769,7 @@ subject: |
   How do I know?
 content: |
   A **writ of garnishment** is a court order telling a garnishee (like your bank or your employer) to give your money to a creditor to pay for a judgment.
-  
+
   A **written statement** is something you get from your creditor if you wages are being garnished that tells you how much you still owe. You can object if you believe the amount on the statement is wrong.
 ---
 id: docket number
@@ -1068,6 +804,7 @@ subject: |
   Where can I find the Date of Issue?
 content: |
   Look for the Date of Issue on the bottom left-hand corner of the Writ of Garnishment.
+
 # add correct Date of Issue image #
 ---
 id: date_of_issue
@@ -1079,15 +816,15 @@ fields:
   - Date of Issue: date_of_issue
     datatype: date
 validation code: |
-      if date_of_issue > today():
-        validation_error("The Date of Issue cannot be in the future.")
+  if date_of_issue > today():
+    validation_error("The Date of Issue cannot be in the future.")
 ---
 template: find_date_of_issue_template
 subject: |
   How do I find the Date of Issue?
 content: |
   Look for the Date of Issue on the bottom left-hand corner of the Writ of Garnishment.
-  
+
   [FILE Date-of-Issue_Request_for_Garnishment.PNG, 100%]
 ---
 id: service_date
@@ -1103,8 +840,8 @@ fields:
   - Service date: service_date
     datatype: date
 validation code: |
-      if service_date > today():
-        validation_error("The service date cannot be in the future.")
+  if service_date > today():
+    validation_error("The service date cannot be in the future.")
 ---
 id: fourteen_day_warning
 question: |
@@ -1126,7 +863,7 @@ question: |
   **Warning!**
 subquestion: |
   Because it has been more than 14 days since you got the Writ, the garnishment will not be stopped.
-  
+
   If the court agrees with your objection (it is upheld), you will have to wait for a refund from your creditor.
 continue button field: more_than_fourteen_days_warning
 ---
@@ -1139,7 +876,7 @@ question: |
   **Warning!**
 subquestion: |
   A **written statement** is a statement from your creditor that tells you the balance of the judgment.
-  
+
   **You can only object if you believe the balance on the statement is incorrect.**
 continue button field: written_statement_warning
 ---
@@ -1163,7 +900,7 @@ content: |
     * The State of Michigan
 
   You can find the garnishee's name and address in your court documents.
-  
+
   [FILE Who_is_the_Garnishee.png, 100%]
 ---
 id: is_periodic_garnishment
@@ -1180,9 +917,9 @@ subject: |
   What is a periodic garnishment?
 content: |
   A periodic garnishment means that the garnishment will happen regularly until the judgment is paid off.
-  
+
   You will know the garnishment is periodic if your Request and Writ for Garnishment says "periodic" at the top center.
-  
+
   [FILE Periodic-Request_for_Garnishment.PNG, 100%]
 ---
 id: reason_for_objection_info
@@ -1327,7 +1064,7 @@ subject: |
   How do I find the court that issued the order?
 content: |
   The order would have been issued by either a District or Circuit Court. Enter whichever one has a number in front of it, such as "23rd Judicial District," or "17th Judicial Circuit."
-  
+
   [FILE what_court.png, 100%]
 ---
 id: is_same_case_number
@@ -1349,7 +1086,7 @@ subject: |
   Where can I find the case number?
 content: |
   Look for the case number in the upper right corner of the forms.
-  
+
   [FILE case_number_installment-payment-order.png, 100%]
 ---
 id: attach_installment_order
@@ -1438,7 +1175,7 @@ code: |
   fix_punctuation(invalid_writ_reason)
 ---
 #######################################################
-##### Documents 
+##### Documents
 #######################################################
 objects:
   - instructions: ALDocument.using(filename="Instructions - Do not file this", title="Instructions", enabled=True, has_addendum=False)
@@ -1463,7 +1200,7 @@ attachment:
 code: |
   objections_to_garnishment_attachment.overflow_fields['invalid_writ_reason'].overflow_trigger = 66
   objections_to_garnishment_attachment.overflow_fields['invalid_writ_reason'].label = "1. f. the writ was not properly issued or is otherwise invalid because"
-  
+
   objections_to_garnishment_attachment.overflow_fields.gathered = True
 ---
 attachment:
@@ -1473,190 +1210,190 @@ attachment:
   editable: False
   pdf template file: Objections_to_Garnishment_-_MC_49.pdf
   fields:
-      - "district_trial_court": |
-          % if court_type == "district":
-          ${ the_court.number }
-          % else:
-          ${ "" }
-          % endif
-      - "circuit_trial_court": |
-          % if court_type == "circuit":
-          ${ the_court.number }
-          % else:
-          ${ "" }
-          % endif
-      - "docket_number_1": ${ docket_number }
-      - "trial_court_address_on_one_line": ${ the_court.address.on_one_line() }
-      - "trial_court_phone_number": ${ the_court.phone }
-      - "other_parties1_address_block": |
-          ${ other_parties[0].name_full() }
-          ${ other_parties[0].address.line_one() }
-          ${ other_parties[0].address.line_two() }
-      - "other_parties1_phone": |
-          % if other_parties[0].no_phone_number:
+    - "district_trial_court": |
+        % if court_type == "district":
+        ${ the_court.number }
+        % else:
+        ${ "" }
+        % endif
+    - "circuit_trial_court": |
+        % if court_type == "circuit":
+        ${ the_court.number }
+        % else:
+        ${ "" }
+        % endif
+    - "docket_number_1": ${ docket_number }
+    - "trial_court_address_on_one_line": ${ the_court.address.on_one_line() }
+    - "trial_court_phone_number": ${ the_court.phone }
+    - "other_parties1_address_block": |
+        ${ other_parties[0].name_full() }
+        ${ other_parties[0].address.line_one() }
+        ${ other_parties[0].address.line_two() }
+    - "other_parties1_phone": |
+        % if other_parties[0].no_phone_number:
+        ${ "Unknown phone" }
+        % else:
+        ${ phone_number_formatted(other_parties[0].phone_number) }
+        % endif
+    - "users1_address_block": |
+        ${ users[0].name_full() }
+        ${ users[0].address.line_one() }
+        ${ users[0].address.line_two() }
+    - "users1_phone": |
+        % if users[0].no_phone_number:
+        ${ "Unknown phone" }
+        % else:
+        ${ phone_number_formatted(users[0].phone_number) }
+        % endif
+    - "other_parties1_attorney_address_block": |
+        % if other_parties[0].has_attorney:
+        ${ other_parties[0].attorney.name_full() }
+        ${ other_parties[0].attorney.bar_number }
+        ${ other_parties[0].attorney.address.line_one() }
+        ${ other_parties[0].attorney.address.line_two() }
+        % else:
+        ${ "" }
+        % endif
+    - "other_parties1_attorney_phone": |
+        % if other_parties[0].has_attorney:
+          % if other_parties[0].attorney.no_phone_number:
           ${ "Unknown phone" }
           % else:
-          ${ phone_number_formatted(other_parties[0].phone_number) }
+          ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
           % endif
-      - "users1_address_block": |
-          ${ users[0].name_full() }
-          ${ users[0].address.line_one() }
-          ${ users[0].address.line_two() }
-      - "users1_phone": |
-          % if users[0].no_phone_number:
-          ${ "Unknown phone" }
-          % else:
-          ${ phone_number_formatted(users[0].phone_number) }
-          % endif
-      - "other_parties1_attorney_address_block": |
-          % if other_parties[0].has_attorney:
-          ${ other_parties[0].attorney.name_full() }
-          ${ other_parties[0].attorney.bar_number }
-          ${ other_parties[0].attorney.address.line_one() }
-          ${ other_parties[0].attorney.address.line_two() }
+        % else:
+          ${ "" }
+        % endif
+    - "garnishees1_address_block": |
+        ${ garnishees[0].name_full() }
+        ${ garnishees[0].address.line_one() }
+        ${ garnishees[0].address.line_two() }
+    - "objects_to_writ": |
+        % if objection_type == "writ_of_garnishment":
+        True
+        % else:
+        False
+        % endif
+    - "issue_date": |
+        % if objection_type == "writ_of_garnishment":
+        ${ date_of_issue }
+        % else:
+        ${ "" }
+        % endif
+    - "exempt_objection": |
+        % if objection_type == "writ_of_garnishment":
+        ${ is_money_exempt }
+        % else:
+        % endif
+    - "bankruptcy_objection": |
+        ${ objection_type == "writ_of_garnishment" and (in_process_bankruptcy or discharged_through_bankruptcy) }
+    - "bankruptcy_case": |
+        % if objection_type == "writ_of_garnishment":
+          % if in_process_bankruptcy or discharged_through_bankruptcy:
+          ${ bankruptcy_case_number }
           % else:
           ${ "" }
           % endif
-      - "other_parties1_attorney_phone": |
-          % if other_parties[0].has_attorney:
-            % if other_parties[0].attorney.no_phone_number:
-            ${ "Unknown phone" }
-            % else:
-            ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
-            % endif
-          % else:
-            ${ "" }
-          % endif
-      - "garnishees1_address_block": |
-          ${ garnishees[0].name_full() }
-          ${ garnishees[0].address.line_one() }
-          ${ garnishees[0].address.line_two() }
-      - "objects_to_writ": |
-          % if objection_type == "writ_of_garnishment":
-          True
-          % else:
-          False
-          % endif
-      - "issue_date": |
-          % if objection_type == "writ_of_garnishment":
-          ${ date_of_issue }
+        % else:
+        % endif
+    - "installment_payment_objection": |
+        ${ (objection_type == "writ_of_garnishment" and is_periodic_garnishment) and ((has_installment_payment and is_current) or (has_installment_payment and not is_current and not_current_objection)) }
+    - "installment_issue_date": |
+        % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
+          % if ((has_installment_payment) and (is_current)) or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
+          ${ installment_order_date }
           % else:
           ${ "" }
           % endif
-      - "exempt_objection": |
-          % if objection_type == "writ_of_garnishment":
-          ${ is_money_exempt }
-          % else:
-          % endif
-      - "bankruptcy_objection": |
-          ${ objection_type == "writ_of_garnishment" and (in_process_bankruptcy or discharged_through_bankruptcy) }
-      - "bankruptcy_case": |
-          % if objection_type == "writ_of_garnishment":
-            % if in_process_bankruptcy or discharged_through_bankruptcy:
-            ${ bankruptcy_case_number }
+        % else:
+        % endif
+    - "installment_court": |
+        % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
+          % if has_installment_payment and is_current or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
+            % if court_ordered:
+            ${ the_court }
             % else:
-            ${ "" }
+            ${ corrected_court_ordered }
             % endif
-          % else:
-          % endif
-      - "installment_payment_objection": |
-          ${ (objection_type == "writ_of_garnishment" and is_periodic_garnishment) and ((has_installment_payment and is_current) or (has_installment_payment and not is_current and not_current_objection)) }
-      - "installment_issue_date": |
-          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
-            % if ((has_installment_payment) and (is_current)) or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
-            ${ installment_order_date }
-            % else:
-            ${ "" }
-            % endif
-          % else:
-          % endif
-      - "installment_court": |
-          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
-            % if has_installment_payment and is_current or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
-              % if court_ordered:
-              ${ the_court }
-              % else:
-              ${ corrected_court_ordered }
-              % endif
-            % else:
-            ${ "" }
-            % endif
-          % else:
-          % endif
-      - "installment_case": |
-          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
-            % if ((has_installment_payment) and (is_current)) or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
-              % if court_ordered and is_same_case_number:
-              ${ docket_number }
-              % else:
-              ${ installment_case_number }
-              % endif
-            % else:
-            ${ "" }
-            % endif
-          % else:
-          % endif
-      - "max_amount_objection": |
-          % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
-          ${ already_at_maximum }
-          % else:
-          % endif
-      - "judgement_paid_objection": |
-          % if objection_type == "writ_of_garnishment":
-          ${ is_paid_in_full }
-          % else:
-          % endif
-      - "invalid_writ_objection": |
-          % if objection_type == "writ_of_garnishment":
-          ${ writ_is_invalid }
-          % else:
-          % endif
-      - "invalid_writ_explanation": |
-          % if objection_type == "writ_of_garnishment":
-            % if writ_is_invalid:
-            ${ objections_to_garnishment_attachment.original_or_overflow_message("invalid_writ_reason", "See addendum.") }
-            % else:
-            ${ "" }
-            % endif
-          % else:
-          % endif
-      - "objects_to_statement": |
-          % if objection_type == "written_statement":
-          True
-          % else:
-          False
-          % endif
-      - "served_writ": |
-          % if objection_type == "writ_of_garnishment":
-          True
-          % else:
-          False
-          % endif
-      - "served_statement": |
-          % if objection_type == "written_statement":
-          True
-          % else:
-          False
-          % endif
-      - "date_of_service": ${ service_date }
-      - "signature_date": |
-          % if MLH_esign:
-          ${ signature_date }
           % else:
           ${ "" }
           % endif
-      - "e_signature": |
-          % if MLH_esign:
-          ${ "/s/" } ${ users[0].name.full() }
+        % else:
+        % endif
+    - "installment_case": |
+        % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
+          % if ((has_installment_payment) and (is_current)) or ((has_installment_payment) and (not (is_current)) and (not_current_objection)):
+            % if court_ordered and is_same_case_number:
+            ${ docket_number }
+            % else:
+            ${ installment_case_number }
+            % endif
           % else:
           ${ "" }
           % endif
-      - "MLH_esign_tag": |
-          % if MLH_esign:
-          ${ MLH_esign_tag }
+        % else:
+        % endif
+    - "max_amount_objection": |
+        % if objection_type == "writ_of_garnishment" and is_periodic_garnishment:
+        ${ already_at_maximum }
+        % else:
+        % endif
+    - "judgement_paid_objection": |
+        % if objection_type == "writ_of_garnishment":
+        ${ is_paid_in_full }
+        % else:
+        % endif
+    - "invalid_writ_objection": |
+        % if objection_type == "writ_of_garnishment":
+        ${ writ_is_invalid }
+        % else:
+        % endif
+    - "invalid_writ_explanation": |
+        % if objection_type == "writ_of_garnishment":
+          % if writ_is_invalid:
+          ${ objections_to_garnishment_attachment.original_or_overflow_message("invalid_writ_reason", "See addendum.") }
           % else:
           ${ "" }
           % endif
+        % else:
+        % endif
+    - "objects_to_statement": |
+        % if objection_type == "written_statement":
+        True
+        % else:
+        False
+        % endif
+    - "served_writ": |
+        % if objection_type == "writ_of_garnishment":
+        True
+        % else:
+        False
+        % endif
+    - "served_statement": |
+        % if objection_type == "written_statement":
+        True
+        % else:
+        False
+        % endif
+    - "date_of_service": ${ service_date }
+    - "signature_date": |
+        % if MLH_esign:
+        ${ signature_date }
+        % else:
+        ${ "" }
+        % endif
+    - "e_signature": |
+        % if MLH_esign:
+        ${ "/s/" } ${ users[0].name.full() }
+        % else:
+        ${ "" }
+        % endif
+    - "MLH_esign_tag": |
+        % if MLH_esign:
+        ${ MLH_esign_tag }
+        % else:
+        ${ "" }
+        % endif
 ---
 attachment:
   name: Order on Objections to Garnishment - MC 51
@@ -1665,61 +1402,62 @@ attachment:
   editable: False
   pdf template file: Order_on_Objections_to_Garnishment_-_MC_51.pdf
   fields:
-      - "district_trial_court": |
-          % if court_type == "district":
-          ${ the_court.number }
-          % else:
-          ${ "" }
-          % endif
-      - "circuit_trial_court": |
-          % if court_type == "circuit":
-          ${ the_court.number }
-          % else:
-          ${ "" }
-          % endif
-      - "docket_number_1": ${ docket_number }
-      - "trial_court_address_on_one_line": ${ the_court.address.on_one_line() }
-      - "trial_court_phone_number": ${ the_court.phone }
-      - "other_parties1_address_block": |
-          ${ other_parties[0].name_full() }
-          ${ other_parties[0].address.line_one() }
-          ${ other_parties[0].address.line_two() }
-      - "other_parties1_phone": |
-          % if other_parties[0].no_phone_number:
+    - "district_trial_court": |
+        % if court_type == "district":
+        ${ the_court.number }
+        % else:
+        ${ "" }
+        % endif
+    - "circuit_trial_court": |
+        % if court_type == "circuit":
+        ${ the_court.number }
+        % else:
+        ${ "" }
+        % endif
+    - "docket_number_1": ${ docket_number }
+    - "trial_court_address_on_one_line": ${ the_court.address.on_one_line() }
+    - "trial_court_phone_number": ${ the_court.phone }
+    - "other_parties1_address_block": |
+        ${ other_parties[0].name_full() }
+        ${ other_parties[0].address.line_one() }
+        ${ other_parties[0].address.line_two() }
+    - "other_parties1_phone": |
+        % if other_parties[0].no_phone_number:
+        ${ "Unknown phone" }
+        % else:
+        ${ phone_number_formatted(other_parties[0].phone_number) }
+        % endif
+    - "users1_address_block": |
+        ${ users[0].name_full() }
+        ${ users[0].address.line_one() }
+        ${ users[0].address.line_two() }
+    - "users1_phone": |
+        % if users[0].no_phone_number:
+        ${ "Unknown phone" }
+        % else:
+        ${ phone_number_formatted(users[0].phone_number) }
+        % endif
+    - "other_parties1_attorney_address_block": |
+        % if other_parties[0].has_attorney:
+        ${ other_parties[0].attorney.name_full() }
+        ${ other_parties[0].attorney.bar_number }
+        ${ other_parties[0].attorney.address.line_one() }
+        ${ other_parties[0].attorney.address.line_two() }
+        % else:
+        ${ "" }
+        % endif
+    - "other_parties1_attorney_phone": |
+        % if other_parties[0].has_attorney:
+          % if other_parties[0].attorney.no_phone_number:
           ${ "Unknown phone" }
           % else:
-          ${ phone_number_formatted(other_parties[0].phone_number) }
+          ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
           % endif
-      - "users1_address_block": |
-          ${ users[0].name_full() }
-          ${ users[0].address.line_one() }
-          ${ users[0].address.line_two() }
-      - "users1_phone": |
-          % if users[0].no_phone_number:
-          ${ "Unknown phone" }
-          % else:
-          ${ phone_number_formatted(users[0].phone_number) }
-          % endif
-      - "other_parties1_attorney_address_block": |
-          % if other_parties[0].has_attorney:
-          ${ other_parties[0].attorney.name_full() }
-          ${ other_parties[0].attorney.bar_number }
-          ${ other_parties[0].attorney.address.line_one() }
-          ${ other_parties[0].attorney.address.line_two() }
-          % else:
+        % else:
           ${ "" }
-          % endif
-      - "other_parties1_attorney_phone": |
-          % if other_parties[0].has_attorney:
-            % if other_parties[0].attorney.no_phone_number:
-            ${ "Unknown phone" }
-            % else:
-            ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
-            % endif
-          % else:
-            ${ "" }
-          % endif
-      - "garnishees1_address_block": |
-          ${ garnishees[0].name_full() }
-          ${ garnishees[0].address.line_one() }
-          ${ garnishees[0].address.line_two() }
+        % endif
+    - "garnishees1_address_block": |
+        ${ garnishees[0].name_full() }
+        ${ garnishees[0].address.line_one() }
+        ${ garnishees[0].address.line_two() }
+---
