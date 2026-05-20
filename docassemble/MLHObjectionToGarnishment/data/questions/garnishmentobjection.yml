@@ -569,9 +569,19 @@ fields:
 id: is_money_exempt
 question: |
   Exempt money
+subquestion: |
+  ${ collapse_template(exempt_income_article) }
 fields:
   - Are you objecting because you think the money being garnished is exempt (can't be garnished)?: is_money_exempt
     datatype: yesnoradio
+---
+template: exempt_income_article
+subject: |
+  How do I know if money is exempt from garnishment?
+content: |
+  Some assets and income can't be garnished because they are protected by law. 
+  
+  To learn what money is protected, please read [Income Protected from Garnishment](https://michiganlegalhelp.org/resources/money-debt-and-consumer-issues/income-protected-from-garnishment).
 ---
 id: in_process_bankruptcy
 question: |
