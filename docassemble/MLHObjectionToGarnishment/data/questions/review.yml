@@ -4,6 +4,12 @@ event: review_full
 question: |
   Review your answers
 review:
+  - note: |
+      % if defined('users[0].name.first'):
+      ${ review_accordion_explainer }
+      % else:
+      ${ review_empty_explainer }
+      % endif
 #
 # ---------- users[0] ----------
 #
@@ -282,6 +288,7 @@ review:
 #
   - raw html: |
       ${ end_accordion() }
+    show if: users[0].name.attribute_defined("first")
 validation code: |
   # update cached documents in case edits are made after docs generated
   undefine('al_user_bundle._downloadable_files', 'al_user_bundle.generate_downloads_task')
