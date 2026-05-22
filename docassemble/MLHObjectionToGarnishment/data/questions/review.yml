@@ -91,7 +91,7 @@ review:
       <h3 class="h5"> Plaintiff has a lawyer</h3>
         - ${word(yesno(other_parties[0].has_attorney))}
 
-      % if other_parties[0].has_attorney:
+      % if other_parties[0].has_attorney and other_parties[0].attorney.name.attribute_defined("first"):
       <h3 class="h5"> Lawyer</h3>
         % if other_parties[0].attorney.name.attribute_defined("first"):
         - **Name:** ${other_parties[0].attorney}
