@@ -396,7 +396,21 @@ code: |
       invalidate('attach_installment_order')
 
     elif not is_periodic_garnishment:
-      pass
+      ## has_installment_payment_interview_order ##
+      undefine('has_installment_payment_interview_order')
+      invalidate('has_installment_payment')
+      invalidate('is_current')
+      invalidate('not_current_objection')
+      invalidate('already_at_maximum')
+      ## installment_payment_interview_order ##
+      undefine('installment_payment_interview_order')
+      invalidate('installment_order_date')
+      invalidate('court_ordered')
+      invalidate('corrected_court_ordered')
+      invalidate('installment_case_number')
+      invalidate('is_same_case_number')
+      invalidate('installment_case_number')
+      invalidate('attach_installment_order')
 
   periodic_garnishment_reset = True
 ---
