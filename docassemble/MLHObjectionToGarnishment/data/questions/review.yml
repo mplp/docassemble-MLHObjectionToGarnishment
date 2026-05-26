@@ -152,6 +152,11 @@ review:
         - ${date_of_issue}
   - Edit:
       - service_date
+      - invalidate:
+          - days_elapsed
+      - follow up:
+          - more_than_fourteen_days_warning
+          - fourteen_day_warning
     button: |
       % if objection_type == "writ_of_garnishment":
       <h3 class="h5"> When did you get the Writ of Garnishment?</h3>
