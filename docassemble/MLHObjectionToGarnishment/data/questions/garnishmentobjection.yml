@@ -157,24 +157,23 @@ code: |
       in_process_bankruptcy
       if in_process_bankruptcy:
         bankruptcy_case_number
-        has_installment_payment_interview_order
-      if not in_process_bankruptcy:
+      elif not in_process_bankruptcy:
         discharged_through_bankruptcy
         if discharged_through_bankruptcy:
           bankruptcy_case_number
-        has_installment_payment_interview_order
+      has_installment_payment_interview_order
+      already_at_maximum
 
-    if not is_periodic_garnishment:
+    elif not is_periodic_garnishment:
       in_process_bankruptcy
       if in_process_bankruptcy:
         bankruptcy_case_number
-        is_paid_in_full
-      if not in_process_bankruptcy:
+      elif not in_process_bankruptcy:
         discharged_through_bankruptcy
         if discharged_through_bankruptcy:
           bankruptcy_case_number
-        is_paid_in_full
 
+    is_paid_in_full
     writ_is_invalid
     if writ_is_invalid:
       invalid_writ_reason
@@ -246,8 +245,6 @@ code: |
       not_current_objection
       if not_current_objection:
         installment_payment_interview_order
-  already_at_maximum
-  is_paid_in_full
 
   has_installment_payment_interview_order = True
 ---
