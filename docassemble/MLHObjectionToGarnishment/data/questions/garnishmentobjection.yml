@@ -131,8 +131,12 @@ code: |
     other_parties[0].attorney.address.address
     other_parties[0].attorney.phone_number
 
-  objection_type
+  nav.set_section("signpost_garnishee_info")
+  garnishees[0].name.first
+  garnishees[0].address.address
 
+  nav.set_section("signpost_objection_info")
+  objection_type
   if objection_type == "writ_of_garnishment":
     docket_number
     date_of_issue
@@ -142,12 +146,7 @@ code: |
     else:
       fourteen_day_warning
 
-  nav.set_section("signpost_garnishee_info")
-  garnishees[0].name.first
-  garnishees[0].address.address
-
   if objection_type == "writ_of_garnishment":
-    nav.set_section("signpost_objection_info")
     is_periodic_garnishment
     reason_for_objection_info
     cannot_be_garnished_list
@@ -158,24 +157,23 @@ code: |
       in_process_bankruptcy
       if in_process_bankruptcy:
         bankruptcy_case_number
-        has_installment_payment_interview_order
-      if not in_process_bankruptcy:
+      elif not in_process_bankruptcy:
         discharged_through_bankruptcy
         if discharged_through_bankruptcy:
           bankruptcy_case_number
-        has_installment_payment_interview_order
+      has_installment_payment_interview_order
+      already_at_maximum
 
-    if not is_periodic_garnishment:
+    elif not is_periodic_garnishment:
       in_process_bankruptcy
       if in_process_bankruptcy:
         bankruptcy_case_number
-        is_paid_in_full
-      if not in_process_bankruptcy:
+      elif not in_process_bankruptcy:
         discharged_through_bankruptcy
         if discharged_through_bankruptcy:
           bankruptcy_case_number
-        is_paid_in_full
 
+    is_paid_in_full
     writ_is_invalid
     if writ_is_invalid:
       invalid_writ_reason
@@ -201,13 +199,13 @@ code: |
       ):
         no_objections_exit
 
-  if objection_type == "written_statement":
+  elif objection_type == "written_statement":
     written_statement_warning
     docket_number
     service_date
     
-  nav.set_section("signpost_download")
   MLH_standard_outro_pages
+  nav.set_section("signpost_download")
 
   if days_elapsed.days < 15:
     final_fourteen_day_warning
@@ -247,8 +245,6 @@ code: |
       not_current_objection
       if not_current_objection:
         installment_payment_interview_order
-  already_at_maximum
-  is_paid_in_full
 
   has_installment_payment_interview_order = True
 ---
@@ -857,6 +853,7 @@ validation code: |
   if service_date > today():
     validation_error("The service date cannot be in the future.")
 ---
+if: days_elapsed.days <= 14
 id: fourteen_day_warning
 question: |
   % if objection_type == "writ_of_garnishment":
@@ -872,6 +869,7 @@ subquestion: |
   % endif
 continue button field: fourteen_day_warning
 ---
+if: days_elapsed.days > 14
 id: more_than_fourteen_days_warning
 question: |
   **Warning!**
@@ -994,7 +992,8 @@ subquestion: |
   % endif
 fields:
   - Bankruptcy case number:: bankruptcy_case_number
-under: ${ collapse_template(case_number_explanation_template) }
+  - note: |
+      ${ collapse_template(case_number_explanation_template) }
 ---
 id: discharged_through_bankruptcy
 question: |
@@ -1047,6 +1046,8 @@ content: |
 ---
 id: is_current
 question: |
+  Installment payment status
+subquestion: |
   If you're behind on the installment payments, you can't object to the garnishment based on your installment payment order.
 fields:
   - Are you current on the payments ordered?: is_current
@@ -1054,7 +1055,7 @@ fields:
 ---
 id: installment_order_date
 question: |
-  When was the order issued?
+  When was the installment payment order issued?
 fields:
   - Order issue date: installment_order_date
     datatype: date
@@ -1069,13 +1070,14 @@ fields:
 id: corrected_court_ordered
 question: |
   List the correct court
+subquestion: |
+  ${ collapse_template(court_that_issued_explanation_template) }
 fields:
   - Which court issued the installment order?: corrected_court_ordered
-under: ${ collapse_template(court_that_issued_explanation_template) }
 ---
 template: court_that_issued_explanation_template
 subject: |
-  How do I find the court that issued the order?
+  How do I find the court that issued the installment order?
 content: |
   The order would have been issued by either a District or Circuit Court. Enter whichever one has a number in front of it, such as "23rd Judicial District," or "17th Judicial Circuit."
 
@@ -1090,10 +1092,11 @@ fields:
 ---
 id: installment_case_number
 question: |
-  Case number
+  Case number for installment order
+subquestion: |
+  ${ collapse_template(installment_case_number_explanation) }
 fields:
   - What is the case number for the installment order?: installment_case_number
-under: ${ collapse_template(installment_case_number_explanation) }
 ---
 template: installment_case_number_explanation
 subject: |
@@ -1121,7 +1124,8 @@ question: |
 fields:
   - Is the maximum amount already being withheld from your wages by another court order?: already_at_maximum
     datatype: yesnoradio
-under: ${ collapse_template(maxmimum_amount_explanation_template) }
+  - note: |
+      ${ collapse_template(maxmimum_amount_explanation_template) }
 ---
 template: maxmimum_amount_explanation_template
 subject: |
@@ -1146,7 +1150,8 @@ subquestion: |
 fields:
   - Was the writ **not properly issued** or **invalid**?: writ_is_invalid
     datatype: yesnoradio
-under: ${ collapse_template(invalid_writ_explanation_template) }
+  - note: |
+      ${ collapse_template(invalid_writ_explanation_template) }
 ---
 template: invalid_writ_explanation_template
 subject: |
@@ -1162,7 +1167,7 @@ fields:
     input type: area
     rows: 2
 ---
-id:
+id: final fourteen day warning
 question: |
   Remember to file your answer by ${ format_date(service_date + date_interval(days=14)) }
 subquestion: |
