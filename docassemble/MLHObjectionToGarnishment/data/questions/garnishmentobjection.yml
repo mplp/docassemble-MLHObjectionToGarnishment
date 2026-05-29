@@ -879,13 +879,13 @@ attachment:
           % endif
       - "other_parties1_attorney_phone": |
           % if other_parties[0].has_attorney:
-            % if other_parties[0].attorney.no_phone_number:
-            ${ "Unknown phone" }
-            % else:
-            ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
-            % endif
+          % if other_parties[0].attorney.no_phone_number:
+          ${ "Unknown phone" }
           % else:
-            ${ "" }
+          ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
+          % endif
+          % else:
+          ${ "" }
           % endif
       - "garnishees1_address_block": |
           ${ garnishees[0].name_full() }
@@ -1071,15 +1071,16 @@ attachment:
           % endif
       - "other_parties1_attorney_phone": |
           % if other_parties[0].has_attorney:
-            % if other_parties[0].attorney.no_phone_number:
-            ${ "Unknown phone" }
-            % else:
-            ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
-            % endif
+          % if other_parties[0].attorney.no_phone_number:
+          ${ "Unknown phone" }
           % else:
-            ${ "" }
+          ${ phone_number_formatted(other_parties[0].attorney.phone_number) }
+          % endif
+          % else:
+          ${ "" }
           % endif
       - "garnishees1_address_block": |
           ${ garnishees[0].name_full() }
           ${ garnishees[0].address.line_one() }
           ${ garnishees[0].address.line_two() }
+---
