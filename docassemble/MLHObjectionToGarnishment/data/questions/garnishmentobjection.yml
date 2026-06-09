@@ -152,26 +152,17 @@ code: |
     reason_for_objection_info
     cannot_be_garnished_list
     is_money_exempt
+    in_process_bankruptcy
+    if in_process_bankruptcy:
+      bankruptcy_case_number
+    elif not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
+        bankruptcy_case_number
 
     if is_periodic_garnishment:
-      in_process_bankruptcy
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-      elif not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
       has_installment_payment_interview_order
       already_at_maximum
-
-    elif not is_periodic_garnishment:
-      in_process_bankruptcy
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-      elif not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
 
     is_paid_in_full
     writ_is_invalid
@@ -311,30 +302,18 @@ code: |
     reason_for_objection_info
     cannot_be_garnished_list
     is_money_exempt
+    in_process_bankruptcy
+    if in_process_bankruptcy:
+      bankruptcy_case_number
+    elif not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
+        bankruptcy_case_number
 
     if is_periodic_garnishment:
-      in_process_bankruptcy
-
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-        has_installment_payment_interview_order
-
-      if not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
       has_installment_payment_interview_order
       already_at_maximum
-
-    elif not is_periodic_garnishment:
-      in_process_bankruptcy
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-      if not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number  
-    
+  
     is_paid_in_full
     writ_is_invalid
     if writ_is_invalid:
@@ -410,28 +389,17 @@ code: |
   periodic_garnishment_reset = True
 ---
 code: |
-  if is_periodic_garnishment:
-    in_process_bankruptcy
-
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-
-    elif in_process_bankruptcy:
+  in_process_bankruptcy
+  if not in_process_bankruptcy:
+    discharged_through_bankruptcy
+    if discharged_through_bankruptcy:
       bankruptcy_case_number
-
+  elif in_process_bankruptcy:
+    bankruptcy_case_number
+  
+  if is_periodic_garnishment:
     has_installment_payment_interview_order
     already_at_maximum
-
-  elif not is_periodic_garnishment:
-    in_process_bankruptcy
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-    elif in_process_bankruptcy:
-      bankruptcy_case_number
 
   periodic_garnishment_regather = True
 ---
@@ -453,24 +421,13 @@ code: |
   in_process_bankruptcy_reset = True
 ---
 code: |
-  if is_periodic_garnishment:
-
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-
-    elif in_process_bankruptcy:
+  if not in_process_bankruptcy:
+    discharged_through_bankruptcy
+    if discharged_through_bankruptcy:
       bankruptcy_case_number
 
-  elif not is_periodic_garnishment:
-
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-    elif in_process_bankruptcy:
-      bankruptcy_case_number
+  elif in_process_bankruptcy:
+    bankruptcy_case_number
 
   in_process_bankruptcy_regather = True
 ---
