@@ -319,27 +319,6 @@ code: |
     if writ_is_invalid:
       invalid_writ_reason
 
-    if not is_periodic_garnishment:
-      if not (
-        is_money_exempt
-        or in_process_bankruptcy
-        or discharged_through_bankruptcy
-        or is_paid_in_full
-        or writ_is_invalid
-      ):
-        no_objections_exit
-
-    if (is_periodic_garnishment and not has_installment_payment) or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection):
-      if not (
-        is_money_exempt
-        or in_process_bankruptcy
-        or discharged_through_bankruptcy
-        or already_at_maximum
-        or is_paid_in_full
-        or writ_is_invalid
-      ):
-        no_objections_exit
-
   elif objection_type == "written_statement":
     written_statement_warning
     docket_number
@@ -349,9 +328,6 @@ code: |
 ---
 code: |
   if objection_type == "writ_of_garnishment":
-    invalidate('in_process_bankruptcy')
-    invalidate('discharged_through_bankruptcy')
-    invalidate('bankruptcy_case_number')
 
     if is_periodic_garnishment:
       ## has_installment_payment_interview_order ##
@@ -389,14 +365,6 @@ code: |
   periodic_garnishment_reset = True
 ---
 code: |
-  in_process_bankruptcy
-  if not in_process_bankruptcy:
-    discharged_through_bankruptcy
-    if discharged_through_bankruptcy:
-      bankruptcy_case_number
-  elif in_process_bankruptcy:
-    bankruptcy_case_number
-  
   if is_periodic_garnishment:
     has_installment_payment_interview_order
     already_at_maximum
@@ -516,64 +484,6 @@ code: |
     installment_payment_interview_order
 
   not_current_objection_regather = True
----
-code: |
-  if objection_type == "writ_of_garnishment":
-
-    if defined('is_periodic_garnishment'):
-
-      if not is_periodic_garnishment:
-        has_objection = False
-
-        if defined('is_money_exempt') and is_money_exempt:
-          has_objection = True
-
-        if defined('in_process_bankruptcy') and in_process_bankruptcy:
-          has_objection = True
-
-        if defined('discharged_through_bankruptcy') and discharged_through_bankruptcy:
-          has_objection = True
-
-        if defined('is_paid_in_full') and is_paid_in_full:
-          has_objection = True
-
-        if defined('writ_is_invalid') and writ_is_invalid:
-          has_objection = True
-
-        if not has_objection:
-          force_ask('no_objections_exit')
-
-      if is_periodic_garnishment:
-        has_objection = False
-
-        if defined('is_money_exempt') and is_money_exempt:
-          has_objection = True
-
-        if defined('in_process_bankruptcy') and in_process_bankruptcy:
-          has_objection = True
-
-        if defined('discharged_through_bankruptcy') and discharged_through_bankruptcy:
-          has_objection = True
-
-        if defined('already_at_maximum') and already_at_maximum:
-          has_objection = True
-
-        if defined('is_paid_in_full') and is_paid_in_full:
-          has_objection = True
-
-        if defined('writ_is_invalid') and writ_is_invalid:
-          has_objection = True
-
-        if defined('has_installment_payment') and has_installment_payment:
-          if defined('is_current') and is_current:
-            has_objection = True
-          if defined('not_current_objection') and not_current_objection:
-            has_objection = True
-
-        if not has_objection:
-          force_ask('no_objections_exit')
-
-  no_objections_exit_recheck = True
 ---
 id: MLH intro landing FirstScreen
 question: |
@@ -1103,11 +1013,11 @@ continue button field: final_fourteen_day_warning
 id: no_objections_exit
 event: no_objections_exit
 question: |
-  Based on your answers, it appears you do not have a reason to object to the garnishment.
+  Based on your answers, it appears you do not have a reason to object to a garnishment.
 subquestion: |
   You cannot complete this tool unless one of the reasons for objecting applies to this garnishment.
 
-  You can hit **Undo** and change your answers, or **Exit**.
+  You can use the **Undo** button or the **Review / Edit** link to edit the garnishment type and reasons for objection.
 
 action buttons:
   - label: Exit

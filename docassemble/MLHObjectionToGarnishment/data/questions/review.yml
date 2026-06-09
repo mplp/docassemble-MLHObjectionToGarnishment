@@ -170,14 +170,11 @@ review:
       - recompute:
         - periodic_garnishment_reset
         - periodic_garnishment_regather
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Is this a periodic garnishment?</h3>
         - ${word(yesno(is_periodic_garnishment))}
   - Edit:
       - is_money_exempt
-      - recompute:
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Are you objecting because you think the money being garnished is exempt?</h3>
         - ${word(yesno(is_money_exempt))}
@@ -186,7 +183,6 @@ review:
       - recompute:
         - in_process_bankruptcy_reset
         - in_process_bankruptcy_regather
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Are you in the process of bankruptcy?</h3>
         - ${word(yesno(in_process_bankruptcy))}
@@ -195,7 +191,6 @@ review:
       - recompute:
         - discharged_through_bankruptcy_reset
         - discharged_through_bankruptcy_regather
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Has this debt been discharged in a bankruptcy case?</h3>
         - ${word(yesno(discharged_through_bankruptcy))}
@@ -209,7 +204,6 @@ review:
       - recompute:
         - has_installment_payment_reset
         - has_installment_payment_regather
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Is there an installment payment order in place for this debt?</h3>
         - ${word(yesno(has_installment_payment))}
@@ -218,7 +212,6 @@ review:
       - recompute:
         - is_current_reset
         - is_current_regather
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Are you current on the payments ordered?</h3>
         - ${word(yesno(is_current))}
@@ -227,7 +220,6 @@ review:
       - recompute:
         - not_current_objection_reset
         - not_current_objection_regather
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Do you want to use the installment plan as a reason for your objection?</h3>
         - ${word(yesno(not_current_objection))}
@@ -238,15 +230,11 @@ review:
         - ${word(yesno(already_at_maximum))}
   - Edit:
       - is_paid_in_full
-      - recompute:
-        - no_objections_exit_recheck
     button: |
       <h3 class="h5"> Have you already paid the full amount of the judgment?</h3>
         - ${word(yesno(is_paid_in_full))}
   - Edit:
       - writ_is_invalid
-      - recompute:
-        - no_objections_exit_recheck
       - invalidate:
         - invalid_writ_reason
     button: |
