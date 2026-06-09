@@ -137,20 +137,20 @@ code: |
 
   nav.set_section("signpost_objection_info")
   objection_type
+
   if objection_type == "writ_of_garnishment":
     docket_number
     date_of_issue
     service_date
+
     if days_elapsed.days > 14:
       more_than_fourteen_days_warning
     else:
       fourteen_day_warning
 
-  if objection_type == "writ_of_garnishment":
     is_periodic_garnishment
     reason_for_objection_info
     cannot_be_garnished_list
-
     is_money_exempt
 
     if is_periodic_garnishment:
@@ -270,6 +270,8 @@ code: |
     invalidate('in_process_bankruptcy')
     invalidate('bankruptcy_case_number')
     invalidate('discharged_through_bankruptcy')
+    invalidate('already_at_maximum')
+    invalidate('is_paid_in_full')
     invalidate('writ_is_invalid')
     invalidate('invalid_writ_reason')
     ## has_installment_payment_interview_order ##
@@ -277,8 +279,6 @@ code: |
     invalidate('has_installment_payment')
     invalidate('is_current')
     invalidate('not_current_objection')
-    invalidate('already_at_maximum')
-    invalidate('is_paid_in_full')
     ## installment_payment_interview_order ##
     undefine('installment_payment_interview_order')
     invalidate('installment_order_date')
@@ -314,6 +314,7 @@ code: |
 
     if is_periodic_garnishment:
       in_process_bankruptcy
+
       if in_process_bankruptcy:
         bankruptcy_case_number
         has_installment_payment_interview_order
@@ -322,19 +323,19 @@ code: |
         discharged_through_bankruptcy
         if discharged_through_bankruptcy:
           bankruptcy_case_number
-        has_installment_payment_interview_order
+      has_installment_payment_interview_order
+      already_at_maximum
 
     elif not is_periodic_garnishment:
       in_process_bankruptcy
       if in_process_bankruptcy:
         bankruptcy_case_number
-        is_paid_in_full
       if not in_process_bankruptcy:
         discharged_through_bankruptcy
         if discharged_through_bankruptcy:
           bankruptcy_case_number  
-        is_paid_in_full
     
+    is_paid_in_full
     writ_is_invalid
     if writ_is_invalid:
       invalid_writ_reason
@@ -372,7 +373,6 @@ code: |
     invalidate('in_process_bankruptcy')
     invalidate('discharged_through_bankruptcy')
     invalidate('bankruptcy_case_number')
-    invalidate('is_paid_in_full')
 
     if is_periodic_garnishment:
       ## has_installment_payment_interview_order ##
@@ -380,7 +380,6 @@ code: |
       invalidate('has_installment_payment')
       invalidate('is_current')
       invalidate('not_current_objection')
-      invalidate('already_at_maximum')
       ## installment_payment_interview_order ##
       undefine('installment_payment_interview_order')
       invalidate('installment_order_date')
@@ -392,12 +391,12 @@ code: |
       invalidate('attach_installment_order')
 
     elif not is_periodic_garnishment:
+      invalidate('already_at_maximum')
       ## has_installment_payment_interview_order ##
       undefine('has_installment_payment_interview_order')
       invalidate('has_installment_payment')
       invalidate('is_current')
       invalidate('not_current_objection')
-      invalidate('already_at_maximum')
       ## installment_payment_interview_order ##
       undefine('installment_payment_interview_order')
       invalidate('installment_order_date')
@@ -419,11 +418,11 @@ code: |
       if discharged_through_bankruptcy:
         bankruptcy_case_number
 
-      has_installment_payment_interview_order
-
     elif in_process_bankruptcy:
       bankruptcy_case_number
-      has_installment_payment_interview_order
+
+    has_installment_payment_interview_order
+    already_at_maximum
 
   elif not is_periodic_garnishment:
     in_process_bankruptcy
@@ -433,73 +432,45 @@ code: |
         bankruptcy_case_number
     elif in_process_bankruptcy:
       bankruptcy_case_number
-    is_paid_in_full
 
   periodic_garnishment_regather = True
 ---
 code: |
   if objection_type == "writ_of_garnishment":
 
-    invalidate('is_paid_in_full')
+    invalidate('bankruptcy_case_number')
 
     if is_periodic_garnishment:
-      ## has_installment_payment_interview_order ##
-      undefine('has_installment_payment_interview_order')
-      invalidate('has_installment_payment')
-      invalidate('is_current')
-      invalidate('not_current_objection')
-      invalidate('already_at_maximum')
-      ## installment_payment_interview_order ##
-      undefine('installment_payment_interview_order')
-      invalidate('installment_order_date')
-      invalidate('court_ordered')
-      invalidate('corrected_court_ordered')
-      invalidate('installment_case_number')
-      invalidate('is_same_case_number')
-      invalidate('installment_case_number')
-      invalidate('attach_installment_order')
 
-      if not in_process_bankruptcy:
-        invalidate('bankruptcy_case_number')
-      elif in_process_bankruptcy:
+      if in_process_bankruptcy:
         invalidate('discharged_through_bankruptcy')
-        invalidate('bankruptcy_case_number')
 
     elif not is_periodic_garnishment:
 
-      if not in_process_bankruptcy:
-        invalidate('bankruptcy_case_number')
-      elif in_process_bankruptcy:
+      if in_process_bankruptcy:
         invalidate('discharged_through_bankruptcy')
-        invalidate('bankruptcy_case_number')
 
   in_process_bankruptcy_reset = True
 ---
 code: |
-  if objection_type == "writ_of_garnishment":
+  if is_periodic_garnishment:
 
-    if is_periodic_garnishment:
-
-      if not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
-
-        has_installment_payment_interview_order
-
-      elif in_process_bankruptcy:
+    if not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
         bankruptcy_case_number
-        has_installment_payment_interview_order
 
-    elif not is_periodic_garnishment:
+    elif in_process_bankruptcy:
+      bankruptcy_case_number
 
-      if not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
-      elif in_process_bankruptcy:
+  elif not is_periodic_garnishment:
+
+    if not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
         bankruptcy_case_number
-      is_paid_in_full
+    elif in_process_bankruptcy:
+      bankruptcy_case_number
 
   in_process_bankruptcy_regather = True
 ---
@@ -571,8 +542,6 @@ code: |
 ---
 code: |
   if not not_current_objection:
-    invalidate('installment_payment_interview_order')
-
     ## installment_payment_interview_order ##
     undefine('installment_payment_interview_order')
     invalidate('installment_order_date')
