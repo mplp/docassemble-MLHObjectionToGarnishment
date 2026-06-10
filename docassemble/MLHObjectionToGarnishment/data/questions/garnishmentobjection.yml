@@ -99,10 +99,12 @@ sections:
   - signpost_download: "Get Your Forms"
   - review_full: "✎ <u>Review / Edit</u>"
 ---
+mandatory: True
 id: interview_order_motion_regarding_child_support
 code: |
   nav.set_section("review_full")
   nav.set_section("signpost_intro")
+  snapshot_start
   MLH_intro_landing
   substantive_intro
   MLH_agree_terms
@@ -201,12 +203,6 @@ code: |
   if days_elapsed.days < 15:
     final_fourteen_day_warning
     
-  interview_order_objection_to_garnishment = True
----
-mandatory: True
-code: |
-  snapshot_start
-  interview_order_objection_to_garnishment
   snapshot_download
   MLH_download
 ---
@@ -810,7 +806,7 @@ fields:
 ---
 id: in_process_bankruptcy
 question: |
-  Are you in the process of bankruptcy?
+  Current bankruptcy case?
 subquestion: |
   This applies only if your bankruptcy case has been filed but is not yet final.
 fields:
@@ -833,7 +829,7 @@ fields:
 ---
 id: discharged_through_bankruptcy
 question: |
-  Status of debt
+  Debt discharged in past bankruptcy case?
 fields:
   - Has this debt been discharged in a bankruptcy case?: discharged_through_bankruptcy
     datatype: yesnoradio
@@ -846,7 +842,7 @@ content: |
 ---
 id: is_paid_in_full
 question: |
-  Payment status
+  Status of debt
 fields:
   - Have you already paid the full amount of the judgment?: is_paid_in_full
     datatype: yesnoradio
@@ -1013,11 +1009,11 @@ continue button field: final_fourteen_day_warning
 id: no_objections_exit
 event: no_objections_exit
 question: |
-  Based on your answers, it appears you do not have a reason to object to a garnishment.
+  Based on your answers, it appears you do not have a reason to object to a ${ word("periodic") if is_periodic_garnishment else word("one-time (non-periodic)") } garnishment.
 subquestion: |
   You cannot complete this tool unless one of the reasons for objecting applies to this garnishment.
 
-  You can use the **Undo** button or the **Review / Edit** link to edit the garnishment type and reasons for objection.
+  You can use the **Undo** button or the **Review / Edit** link to edit the ${ word("garnishment type and") if not is_periodic_garnishment else word("") } reasons for objection.
 
 action buttons:
   - label: Exit
