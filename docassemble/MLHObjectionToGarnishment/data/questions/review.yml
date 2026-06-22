@@ -84,7 +84,7 @@ review:
         - other_parties[0].attorney.address.city
         - other_parties[0].attorney.address.state
         - other_parties[0].attorney.address.zip
-        - other_parties[0].attorney.phone_number
+        - other_parties[0].attorney.no_phone_number
       - recompute:
         - interview_order_other_parties_attorney
     button: |
@@ -102,8 +102,8 @@ review:
         % if other_parties[0].attorney.address.attribute_defined("address"):
         - **Address:** ${other_parties[0].attorney.address.on_one_line()}
         % endif
-        % if other_parties[0].attorney.attribute_defined("phone_number"):
-        - **Phone number:** ${other_parties[0].attorney.phone_number}
+        % if other_parties[0].attorney.attribute_defined("no_phone_number"):
+        - **Phone number:** ${ word("None") if other_parties[0].attorney.no_phone_number else phone_number_formatted(other_parties[0].attorney.phone_number) }
         % endif
       % endif
 #
