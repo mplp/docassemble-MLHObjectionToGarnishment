@@ -6,13 +6,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docassemble.MLHObjectionToGarnishment"
-version = "0.0.3"
+version = "1.0.0"
 description = "A Docassemble tool to create forms to object to garnishment in Michigan."
 readme = "README.md"
 authors = [
     { name = "Emily Miller", email = "ekressmiller@lsscm.org" },
 ]
 dependencies = []
+license = "MIT"
+license-files = [
+    "LICENSE",
+]
 
 [project.urls]
 Homepage = "https://docassemble.org"

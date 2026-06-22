@@ -30,22 +30,30 @@ code: |
 ---
 features:
   labels above fields: True
+  javascript:
+    - survey_monkey_script.js
 ---
 code: |
   al_form_type = "existing_case"
 ---
 code: |
-  resource_page_url_only = "https://michiganlegalhelp.org/node/619/"
-  resource_page_name = "Objection to Garnishment"
-  cover_sheet_header = ""
+  resource_page_url_only = "https://michiganlegalhelp.org/node/613/"
+  resource_page_name = "I'm Being Garnished for a Debt That Is Not Child Support"
+  cover_sheet_header = "Your garnishment objection forms are ready. Well done!"
 ---
 code: |
   survey_link_url_only = "https://www.surveymonkey.com/r/WRK3V26"
 ---
+code: |
+  has_whats_next_text = True
+---
+code: |
+  whats_next_text_message = "Text 2000 to (734) 275-2201 to get automated text messages about next steps for objecting to a garnishment."
+---
 template: survey_embed_script
 content: |
   <script>
-    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd3_2FNdn6sngWnrPcDhGLsgsPdZn_2BmeFykDNFOiUIRFH7A.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
+    (function(t,e,s,n){var o,a,c;t.SMCX=t.SMCX||[],e.getElementById(n)||(o=e.getElementsByTagName(s),a=o[o.length-1],c=e.createElement(s),c.type="text/javascript",c.async=!0,c.id=n,c.src="https://widget.surveymonkey.com/collect/website/js/tRaiETqnLgj758hTBazgd8qZ8ON_2FyjUqTzYvfSuztE7VEuieG3RSVOs4kBQIgGVR.js",a.parentNode.insertBefore(c,a))})(window,document,"script","smcx-sdk");
   </script>
 ---
 code: |
@@ -99,10 +107,12 @@ sections:
   - signpost_download: "Get Your Forms"
   - review_full: "✎ <u>Review / Edit</u>"
 ---
+mandatory: True
 id: interview_order_motion_regarding_child_support
 code: |
   nav.set_section("review_full")
   nav.set_section("signpost_intro")
+  snapshot_start
   MLH_intro_landing
   substantive_intro
   MLH_agree_terms
@@ -152,26 +162,17 @@ code: |
     reason_for_objection_info
     cannot_be_garnished_list
     is_money_exempt
+    in_process_bankruptcy
+    if in_process_bankruptcy:
+      bankruptcy_case_number
+    elif not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
+        bankruptcy_case_number
 
     if is_periodic_garnishment:
-      in_process_bankruptcy
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-      elif not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
       has_installment_payment_interview_order
       already_at_maximum
-
-    elif not is_periodic_garnishment:
-      in_process_bankruptcy
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-      elif not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
 
     is_paid_in_full
     writ_is_invalid
@@ -210,12 +211,6 @@ code: |
   if days_elapsed.days < 15:
     final_fourteen_day_warning
     
-  interview_order_objection_to_garnishment = True
----
-mandatory: True
-code: |
-  snapshot_start
-  interview_order_objection_to_garnishment
   snapshot_download
   MLH_download
 ---
@@ -311,55 +306,22 @@ code: |
     reason_for_objection_info
     cannot_be_garnished_list
     is_money_exempt
+    in_process_bankruptcy
+    if in_process_bankruptcy:
+      bankruptcy_case_number
+    elif not in_process_bankruptcy:
+      discharged_through_bankruptcy
+      if discharged_through_bankruptcy:
+        bankruptcy_case_number
 
     if is_periodic_garnishment:
-      in_process_bankruptcy
-
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-        has_installment_payment_interview_order
-
-      if not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number
       has_installment_payment_interview_order
       already_at_maximum
-
-    elif not is_periodic_garnishment:
-      in_process_bankruptcy
-      if in_process_bankruptcy:
-        bankruptcy_case_number
-      if not in_process_bankruptcy:
-        discharged_through_bankruptcy
-        if discharged_through_bankruptcy:
-          bankruptcy_case_number  
-    
+  
     is_paid_in_full
     writ_is_invalid
     if writ_is_invalid:
       invalid_writ_reason
-
-    if not is_periodic_garnishment:
-      if not (
-        is_money_exempt
-        or in_process_bankruptcy
-        or discharged_through_bankruptcy
-        or is_paid_in_full
-        or writ_is_invalid
-      ):
-        no_objections_exit
-
-    if (is_periodic_garnishment and not has_installment_payment) or (is_periodic_garnishment and has_installment_payment and not is_current and not not_current_objection):
-      if not (
-        is_money_exempt
-        or in_process_bankruptcy
-        or discharged_through_bankruptcy
-        or already_at_maximum
-        or is_paid_in_full
-        or writ_is_invalid
-      ):
-        no_objections_exit
 
   elif objection_type == "written_statement":
     written_statement_warning
@@ -370,9 +332,6 @@ code: |
 ---
 code: |
   if objection_type == "writ_of_garnishment":
-    invalidate('in_process_bankruptcy')
-    invalidate('discharged_through_bankruptcy')
-    invalidate('bankruptcy_case_number')
 
     if is_periodic_garnishment:
       ## has_installment_payment_interview_order ##
@@ -411,27 +370,8 @@ code: |
 ---
 code: |
   if is_periodic_garnishment:
-    in_process_bankruptcy
-
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-
-    elif in_process_bankruptcy:
-      bankruptcy_case_number
-
     has_installment_payment_interview_order
     already_at_maximum
-
-  elif not is_periodic_garnishment:
-    in_process_bankruptcy
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-    elif in_process_bankruptcy:
-      bankruptcy_case_number
 
   periodic_garnishment_regather = True
 ---
@@ -453,24 +393,13 @@ code: |
   in_process_bankruptcy_reset = True
 ---
 code: |
-  if is_periodic_garnishment:
-
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-
-    elif in_process_bankruptcy:
+  if not in_process_bankruptcy:
+    discharged_through_bankruptcy
+    if discharged_through_bankruptcy:
       bankruptcy_case_number
 
-  elif not is_periodic_garnishment:
-
-    if not in_process_bankruptcy:
-      discharged_through_bankruptcy
-      if discharged_through_bankruptcy:
-        bankruptcy_case_number
-    elif in_process_bankruptcy:
-      bankruptcy_case_number
+  elif in_process_bankruptcy:
+    bankruptcy_case_number
 
   in_process_bankruptcy_regather = True
 ---
@@ -559,84 +488,6 @@ code: |
     installment_payment_interview_order
 
   not_current_objection_regather = True
----
-code: |
-  if objection_type == "writ_of_garnishment":
-
-    if defined('is_periodic_garnishment'):
-
-      if not is_periodic_garnishment:
-        has_objection = False
-
-        if defined('is_money_exempt') and is_money_exempt:
-          has_objection = True
-
-        if defined('in_process_bankruptcy') and in_process_bankruptcy:
-          has_objection = True
-
-        if defined('discharged_through_bankruptcy') and discharged_through_bankruptcy:
-          has_objection = True
-
-        if defined('is_paid_in_full') and is_paid_in_full:
-          has_objection = True
-
-        if defined('writ_is_invalid') and writ_is_invalid:
-          has_objection = True
-
-        if not has_objection:
-          force_ask('no_objections_exit')
-
-      if is_periodic_garnishment:
-        has_objection = False
-
-        if defined('is_money_exempt') and is_money_exempt:
-          has_objection = True
-
-        if defined('in_process_bankruptcy') and in_process_bankruptcy:
-          has_objection = True
-
-        if defined('discharged_through_bankruptcy') and discharged_through_bankruptcy:
-          has_objection = True
-
-        if defined('already_at_maximum') and already_at_maximum:
-          has_objection = True
-
-        if defined('is_paid_in_full') and is_paid_in_full:
-          has_objection = True
-
-        if defined('writ_is_invalid') and writ_is_invalid:
-          has_objection = True
-
-        if defined('has_installment_payment') and has_installment_payment:
-          if defined('is_current') and is_current:
-            has_objection = True
-          if defined('not_current_objection') and not_current_objection:
-            has_objection = True
-
-        if not has_objection:
-          force_ask('no_objections_exit')
-
-  no_objections_exit_recheck = True
----
-id: MLH intro landing FirstScreen
-question: |
-  ${ MLH_interview_short_title }
-subquestion: |
-  ${ MLH_welcome_message }
-
-  It will probably take about **${ MLH_time_min } to ${ MLH_time_max } minutes** to answer all the questions.
-  % if MLH_materials_included:
-
-    To fill out your forms **you will need:**
-    
-    ${ MLH_materials }
-  % endif
-
-  Your personalized ${ MLH_form_type } will be ready after you answer all the questions. 
-  % if MLH_instructions_included:
-    You will also get instructions for what to do next with your ${ MLH_form_type }.
-  % endif
-continue button field: MLH_intro_landing
 ---
 id: more help intro screen
 question: |
@@ -742,6 +593,7 @@ fields:
     choices:
       - Writ of garnishment: writ_of_garnishment
       - Written statement: written_statement
+progress: 65
 ---
 template: writ_or_statement_explanation_template
 subject: |
@@ -860,6 +712,7 @@ subquestion: |
 
   **You can only object if you believe the balance on the statement is incorrect.**
 continue button field: written_statement_warning
+progress: 80
 ---
 id: garnishees_name
 question: |
@@ -892,6 +745,7 @@ subquestion: |
 fields:
   - Is this a periodic garnishment?: is_periodic_garnishment
     datatype: yesnoradio
+progress: 80
 ---
 template: periodic_garnishment_explanation_template
 subject: |
@@ -907,7 +761,7 @@ id: reason_for_objection_info
 question: |
   Reason for objection
 subquestion: |
-  The next few questions ask about why you're objecting to the garnishment. Not any reason can be a reason to object. The law lists the reasons why you can object. The tool will go through the options. You can have more than one reason for objecting.
+  The next few questions ask about why you're objecting to the garnishment. Not every reason can be a reason to object. The law lists the reasons why you can object. The tool will go through the options. You can have more than one reason for objecting.
 continue button field: reason_for_objection_info
 ---
 id: cannot_be_garnished_list
@@ -943,7 +797,7 @@ fields:
 ---
 id: in_process_bankruptcy
 question: |
-  Are you in the process of bankruptcy?
+  Current bankruptcy case?
 subquestion: |
   This applies only if your bankruptcy case has been filed but is not yet final.
 fields:
@@ -966,7 +820,7 @@ fields:
 ---
 id: discharged_through_bankruptcy
 question: |
-  Status of debt
+  Debt discharged in past bankruptcy case?
 fields:
   - Has this debt been discharged in a bankruptcy case?: discharged_through_bankruptcy
     datatype: yesnoradio
@@ -979,7 +833,7 @@ content: |
 ---
 id: is_paid_in_full
 question: |
-  Payment status
+  Status of debt
 fields:
   - Have you already paid the full amount of the judgment?: is_paid_in_full
     datatype: yesnoradio
@@ -1100,11 +954,14 @@ template: maxmimum_amount_explanation_template
 subject: |
   How do I know if the maximum amount is already being withheld?
 content: |
-  If your paycheck is already being garnished when you and/or your employer got this Writ of Garnishment for something other than child support, no more than 25% of your disposable earnings can be garnished.
+  If your paycheck is already being garnished when you and/or your employer got this Writ of Garnishment for something **other than child support,** a creditor can garnish whichever is less: 
+  
+  * up to 25% of your disposable earnings or 
+  * the amount of your disposable earnings that's more than 30 times the federal minimum wage (currently $217.50/week).
 
   Your disposable earnings are money you get after legally required deductions from your paycheck. Legally required deductions are taxes and social security payments. They are not deductions for medical insurance, pension plans, life insurance, or employee savings plans.
 
-  If the garnishment is to pay child support, up to 50% of your disposable earnings can be garnished. If it is for support payments that are more than 12 weeks late, 55% of your disposable earnings can be garnished. If you don't have other children or dependents, the garnishment could be for 60% of your disposable earnings; 65% if you're more than 12 weeks behind.
+  If the garnishment **is to pay child support,** up to 50% of your disposable earnings can be garnished. If it is for support payments that are more than 12 weeks late, 55% of your disposable earnings can be garnished. If you don't have other children or dependents, the garnishment could be for 60% of your disposable earnings; 65% if you're more than 12 weeks behind.
 
   If your pay is already being garnished for the maximum amount, this creditor cannot garnish more until after the other one expires or is fully paid.
 ---
@@ -1146,11 +1003,11 @@ continue button field: final_fourteen_day_warning
 id: no_objections_exit
 event: no_objections_exit
 question: |
-  Based on your answers, it appears you do not have a reason to object to the garnishment.
+  Based on your answers, it appears you do not have a reason to object to a ${ word("periodic") if is_periodic_garnishment else word("one-time (non-periodic)") } garnishment.
 subquestion: |
   You cannot complete this tool unless one of the reasons for objecting applies to this garnishment.
 
-  You can hit **Undo** and change your answers, or **Exit**.
+  You can use the **Undo** button or the **Review / Edit** link to edit the ${ word("garnishment type and") if not is_periodic_garnishment else word("") } reasons for objection.
 
 action buttons:
   - label: Exit

@@ -2,7 +2,9 @@
 
 A Docassemble tool to create forms to object to garnishment in Michigan.
 
-## Author
+## Authors:
+Michigan Legal Help
+Lemma Legal
 
-Emily Miller, ekressmiller@lsscm.org
-
+## Changelog:
+* 6/22/26  1.0.0 initial launch

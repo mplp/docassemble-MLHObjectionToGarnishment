@@ -44,13 +44,13 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.MLHObjectionToGarnishment',
-      version='0.0.3',
+      version='1.0.0',
       description=('A Docassemble tool to create forms to object to garnishment in Michigan.'),
-      long_description='# docassemble.MLHObjectionToGarnishment\r\n\r\nA Docassemble tool to create forms to object to garnishment in Michigan.\r\n\r\n## Author\r\n\r\nEmily Miller, ekressmiller@lsscm.org\r\n\r\n',
+      long_description='# docassemble.MLHObjectionToGarnishment\r\n\r\nA Docassemble tool to create forms to object to garnishment in Michigan.\r\n\r\n## Authors:\r\nMichigan Legal Help\r\nLemma Legal\r\n\r\n## Changelog:\r\n* 6/22/26  1.0.0 initial launch',
       long_description_content_type='text/markdown',
       author='Emily Miller',
       author_email='ekressmiller@lsscm.org',
-      license='',
+      license='MIT',
       url='https://docassemble.org',
       packages=find_namespace_packages(),
       install_requires=[],
