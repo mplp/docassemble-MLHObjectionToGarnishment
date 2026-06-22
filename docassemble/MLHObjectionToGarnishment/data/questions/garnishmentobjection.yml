@@ -481,26 +481,6 @@ code: |
 
   not_current_objection_regather = True
 ---
-id: MLH intro landing FirstScreen
-question: |
-  ${ MLH_interview_short_title }
-subquestion: |
-  ${ MLH_welcome_message }
-
-  It will probably take about **${ MLH_time_min } to ${ MLH_time_max } minutes** to answer all the questions.
-  % if MLH_materials_included:
-
-    To fill out your forms **you will need:**
-    
-    ${ MLH_materials }
-  % endif
-
-  Your personalized ${ MLH_form_type } will be ready after you answer all the questions. 
-  % if MLH_instructions_included:
-    You will also get instructions for what to do next with your ${ MLH_form_type }.
-  % endif
-continue button field: MLH_intro_landing
----
 id: more help intro screen
 question: |
   Is this tool right for you?
@@ -605,6 +585,7 @@ fields:
     choices:
       - Writ of garnishment: writ_of_garnishment
       - Written statement: written_statement
+progress: 65
 ---
 template: writ_or_statement_explanation_template
 subject: |
@@ -723,6 +704,7 @@ subquestion: |
 
   **You can only object if you believe the balance on the statement is incorrect.**
 continue button field: written_statement_warning
+progress: 80
 ---
 id: garnishees_name
 question: |
@@ -755,6 +737,7 @@ subquestion: |
 fields:
   - Is this a periodic garnishment?: is_periodic_garnishment
     datatype: yesnoradio
+progress: 80
 ---
 template: periodic_garnishment_explanation_template
 subject: |
@@ -770,7 +753,7 @@ id: reason_for_objection_info
 question: |
   Reason for objection
 subquestion: |
-  The next few questions ask about why you're objecting to the garnishment. Not any reason can be a reason to object. The law lists the reasons why you can object. The tool will go through the options. You can have more than one reason for objecting.
+  The next few questions ask about why you're objecting to the garnishment. Not every reason can be a reason to object. The law lists the reasons why you can object. The tool will go through the options. You can have more than one reason for objecting.
 continue button field: reason_for_objection_info
 ---
 id: cannot_be_garnished_list
@@ -963,11 +946,14 @@ template: maxmimum_amount_explanation_template
 subject: |
   How do I know if the maximum amount is already being withheld?
 content: |
-  If your paycheck is already being garnished when you and/or your employer got this Writ of Garnishment for something other than child support, no more than 25% of your disposable earnings can be garnished.
+  If your paycheck is already being garnished when you and/or your employer got this Writ of Garnishment for something **other than child support,** a creditor can garnish whichever is less: 
+  
+  * up to 25% of your disposable earnings or 
+  * the amount of your disposable earnings that's more than 30 times the federal minimum wage (currently $217.50/week).
 
   Your disposable earnings are money you get after legally required deductions from your paycheck. Legally required deductions are taxes and social security payments. They are not deductions for medical insurance, pension plans, life insurance, or employee savings plans.
 
-  If the garnishment is to pay child support, up to 50% of your disposable earnings can be garnished. If it is for support payments that are more than 12 weeks late, 55% of your disposable earnings can be garnished. If you don't have other children or dependents, the garnishment could be for 60% of your disposable earnings; 65% if you're more than 12 weeks behind.
+  If the garnishment **is to pay child support,** up to 50% of your disposable earnings can be garnished. If it is for support payments that are more than 12 weeks late, 55% of your disposable earnings can be garnished. If you don't have other children or dependents, the garnishment could be for 60% of your disposable earnings; 65% if you're more than 12 weeks behind.
 
   If your pay is already being garnished for the maximum amount, this creditor cannot garnish more until after the other one expires or is fully paid.
 ---
