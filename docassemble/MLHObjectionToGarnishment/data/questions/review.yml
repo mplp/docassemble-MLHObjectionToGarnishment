@@ -1,1 +1,288 @@
-#review screen code goes here
+---
+id: review_full
+event: review_full
+question: |
+  Review your answers
+review:
+  - note: |
+      % if defined('users[0].name.first'):
+      ${ review_accordion_explainer }
+      % else:
+      ${ review_empty_explainer }
+      % endif
+#
+# ---------- users[0] ----------
+#
+  - raw html: |
+      ${ start_accordion("""<h2>Your Basic Information</h2>""") }
+    show if: users[0].name.attribute_defined("first")
+  - Edit:
+      - users[0].name.first
+    button: |
+      ### Your name
+        - ${users[0]}
+  - Edit:
+      - users[0].address.address
+    button: |
+      ### Your address
+        - ${users[0].address.on_one_line()}
+  - Edit:
+      - users[0].no_phone_number
+    button: |
+      ###Your Phone Number
+        - ${ word("None") if users[0].no_phone_number else phone_number_formatted(users[0].phone_number) }
+#
+# ---------- Your Case ----------
+#
+  - raw html: |
+      ${ next_accordion("""<h2>Your Case</h2>""") }
+    show if: defined('court_type')
+  - Edit:
+      - court_type
+    button: |
+      ### Court type
+        - ${capitalize(court_type)}
+  - Edit:
+      - county_choice
+      - court_index
+      - recompute:
+        - the_court
+    button: |
+      ### County where your case is
+        - ${county_choice}
+#
+# ---------- Plaintiff ----------
+#
+  - raw html: |
+      ${ next_accordion("""<h2>The Plaintiff</h2>""") }
+    show if: defined('other_parties[0].name.first')
+  - Edit:
+      - other_parties[0].name.first
+    button: |
+      ### Plaintiff's full name
+        - ${other_parties[0].name.first}
+  - Edit:
+      - other_parties[0].address.address
+    button: |
+      ### Plaintiff's address
+        - ${other_parties[0].address.on_one_line()}
+  - Edit:
+      - other_parties[0].no_phone_number
+    button: |
+      ### Plaintiff's phone number
+        - ${ word("None") if other_parties[0].no_phone_number else phone_number_formatted(other_parties[0].phone_number) }
+  - Edit:
+      - other_parties[0].has_attorney
+      - invalidate:
+        - other_parties[0].attorney.name.first
+        - other_parties[0].attorney.name.middle
+        - other_parties[0].attorney.name.last
+        - other_parties[0].attorney.name.suffix
+        - other_parties[0].attorney.bar_number
+        - other_parties[0].attorney.address.address
+        - other_parties[0].attorney.address.unit
+        - other_parties[0].attorney.address.city
+        - other_parties[0].attorney.address.state
+        - other_parties[0].attorney.address.zip
+        - other_parties[0].attorney.phone_number
+      - recompute:
+        - interview_order_other_parties_attorney
+    button: |
+      ### Plaintiff has a lawyer
+        - ${word(yesno(other_parties[0].has_attorney))}
+
+      % if other_parties[0].has_attorney and other_parties[0].attorney.name.attribute_defined("first"):
+      ### Lawyer
+        % if other_parties[0].attorney.name.attribute_defined("first"):
+        - **Name:** ${other_parties[0].attorney}
+        % endif
+        % if other_parties[0].attorney.attribute_defined("bar_number"):
+        - **Bar number:** ${other_parties[0].attorney.bar_number}
+        % endif
+        % if other_parties[0].attorney.address.attribute_defined("address"):
+        - **Address:** ${other_parties[0].attorney.address.on_one_line()}
+        % endif
+        % if other_parties[0].attorney.attribute_defined("phone_number"):
+        - **Phone number:** ${other_parties[0].attorney.phone_number}
+        % endif
+      % endif
+#
+# ---------- The Garnishee ----------
+#
+  - raw html: |
+      ${ next_accordion("""<h2>The Garnishee</h2>""") }
+    show if: defined('garnishees[0].name.first')
+  - Edit:
+      - garnishees[0].name.first
+    button: |
+      ### Garnishee's full name
+        - ${garnishees[0].name.first}
+  - Edit:
+      - garnishees[0].address.address
+    button: |
+      ### Garnishee's address
+        - ${garnishees[0].address.on_one_line()}
+#
+# ---------- Your Objection ----------
+#
+  - raw html: |
+      ${ next_accordion("""<h2>Your Objection</h2>""") }
+    show if: defined('objection_type')
+  - Edit:
+      - objection_type
+      - recompute:
+        - objection_type_reset
+        - objection_type_regather
+    button: |
+      ### Objection type
+        % if objection_type == "writ_of_garnishment":
+        - Writ of garnishment
+        % elif objection_type == "written_statement":
+        - Written statement
+        % endif
+  - Edit:
+      - docket_number
+    button: |
+      ### Case number
+        - ${docket_number}
+  - Edit:
+      - date_of_issue
+    button: |
+      ### When was your Writ of Garnishment issued?
+        - ${date_of_issue}
+  - Edit:
+      - service_date
+      - invalidate:
+          - days_elapsed
+      - follow up:
+          - more_than_fourteen_days_warning
+          - fourteen_day_warning
+    button: |
+      % if objection_type == "writ_of_garnishment":
+      ### When did you get the Writ of Garnishment?
+        - ${service_date}
+      % elif objection_type == "written_statement":
+      ### When did you get the Written Statement?
+        - ${service_date}
+      % endif
+  - Edit:
+      - is_periodic_garnishment
+      - recompute:
+        - periodic_garnishment_reset
+        - periodic_garnishment_regather
+    button: |
+      ### Is this a periodic garnishment?
+        - ${word(yesno(is_periodic_garnishment))}
+  - Edit:
+      - is_money_exempt
+    button: |
+      ### Are you objecting because you think the money being garnished is exempt?
+        - ${word(yesno(is_money_exempt))}
+  - Edit:
+      - in_process_bankruptcy
+      - recompute:
+        - in_process_bankruptcy_reset
+        - in_process_bankruptcy_regather
+    button: |
+      ### Are you in the process of bankruptcy?
+        - ${word(yesno(in_process_bankruptcy))}
+  - Edit:
+      - discharged_through_bankruptcy
+      - recompute:
+        - discharged_through_bankruptcy_reset
+        - discharged_through_bankruptcy_regather
+    button: |
+      ### Has this debt been discharged in a bankruptcy case?
+        - ${word(yesno(discharged_through_bankruptcy))}
+  - Edit:
+      - bankruptcy_case_number
+    button: |
+      ### Bankruptcy case number
+        - ${bankruptcy_case_number}
+  - Edit:
+      - has_installment_payment
+      - recompute:
+        - has_installment_payment_reset
+        - has_installment_payment_regather
+    button: |
+      ### Is there an installment payment order in place for this debt?
+        - ${word(yesno(has_installment_payment))}
+  - Edit:
+      - is_current
+      - recompute:
+        - is_current_reset
+        - is_current_regather
+    button: |
+      ### Are you current on the payments ordered?
+        - ${word(yesno(is_current))}
+  - Edit:
+      - not_current_objection
+      - recompute:
+        - not_current_objection_reset
+        - not_current_objection_regather
+    button: |
+      ### Do you want to use the installment plan as a reason for your objection?
+        - ${word(yesno(not_current_objection))}
+  - Edit:
+      - already_at_maximum
+    button: |
+      ### Is the maximum amount already being withheld from your wages by another court order?
+        - ${word(yesno(already_at_maximum))}
+  - Edit:
+      - is_paid_in_full
+    button: |
+      ### Have you already paid the full amount of the judgment?
+        - ${word(yesno(is_paid_in_full))}
+  - Edit:
+      - writ_is_invalid
+      - invalidate:
+        - invalid_writ_reason
+    button: |
+      ### Was the writ not properly issued or invalid?
+        - ${word(yesno(writ_is_invalid))}
+        % if writ_is_invalid:
+        - *The writ was not properly issued or is otherwise invalid because...* ${invalid_writ_reason}
+        % endif
+  - Edit:
+      - installment_order_date
+    button: |
+      ### When was the payment order issue?
+        - ${installment_order_date}
+  - Edit:
+      - court_ordered
+    button: |
+      ### Was the installment order issued by ${ the_court }?
+        - ${word(yesno(court_ordered))}
+  - Edit:
+      - corrected_court_ordered
+    button: |
+      ### Which court issued the installment order?
+        - ${corrected_court_ordered}
+  - Edit:
+      - installment_case_number
+    button: |
+      ### Installment order case number
+        - ${installment_case_number}
+  - Edit:
+      - is_same_case_number
+    button: |
+      ### Does the installment order have the same case number as the Writ of Garnishment?
+        - ${word(yesno(is_same_case_number))}
+        % if not is_same_case_number:
+        - Case number: ${installment_case_number}
+        % endif
+  - Edit:
+      - MLH_esign
+    button: |
+      ### Would you like to add your electronic signature to your form?
+        - ${word(yesno(MLH_esign))} 
+#
+# ---------- End ----------
+#
+  - raw html: |
+      ${ end_accordion() }
+    show if: users[0].name.attribute_defined("first")
+validation code: |
+  # update cached documents in case edits are made after docs generated
+  undefine('al_user_bundle._downloadable_files', 'al_user_bundle.generate_downloads_task')
+---
