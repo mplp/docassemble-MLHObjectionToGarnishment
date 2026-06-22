@@ -123,7 +123,7 @@ code: |
   nav.set_section("signpost_your_info")
   users[0].name.first
   users[0].address.address
-  users[0].phone_number
+  users[0].no_phone_number
 
   nav.set_section("signpost_case_info")
   court_type
@@ -134,12 +134,12 @@ code: |
   nav.set_section("signpost_plaintiff_info")
   other_parties[0].name.first
   other_parties[0].address.address
-  other_parties[0].phone_number
+  other_parties[0].no_phone_number
   other_parties[0].has_attorney
   if other_parties[0].has_attorney:
     other_parties[0].attorney.name.first
     other_parties[0].attorney.address.address
-    other_parties[0].attorney.phone_number
+    other_parties[0].attorney.no_phone_number
 
   nav.set_section("signpost_garnishee_info")
   garnishees[0].name.first
@@ -247,7 +247,7 @@ code: |
   if other_parties[0].has_attorney:
     other_parties[0].attorney.name.first
     other_parties[0].attorney.address.address
-    other_parties[0].attorney.phone_number
+    other_parties[0].attorney.no_phone_number
 
   interview_order_other_parties_attorney = True
 ---
