@@ -7,4 +7,4 @@ Michigan Legal Help
 Lemma Legal
 
 ## Changelog:
-* 6/22/26  1.0.0 initial launch
+* form down branch
