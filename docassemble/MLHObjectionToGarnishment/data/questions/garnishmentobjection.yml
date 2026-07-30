@@ -628,7 +628,7 @@ subquestion: |
   ${ collapse_template(where_date_writ_of_garnishment_template) }
 fields:
   - Date of issue: issue_date
-    datatype: date
+    datatype: ThreePartsDate
 ---
 template: where_date_writ_of_garnishment_template
 subject: |
@@ -645,7 +645,7 @@ subquestion: |
   ${ collapse_template(find_date_of_issue_template) }
 fields:
   - Date of Issue: date_of_issue
-    datatype: date
+    datatype: ThreePartsDate
 validation code: |
   if date_of_issue > today():
     validation_error("The Date of Issue cannot be in the future.")
@@ -669,7 +669,7 @@ subquestion: |
   This is the date it was served on you.
 fields:
   - Service date: service_date
-    datatype: date
+    datatype: ThreePartsDate
 validation code: |
   if service_date > today():
     validation_error("The service date cannot be in the future.")
@@ -891,7 +891,7 @@ question: |
   When was the installment payment order issued?
 fields:
   - Order issue date: installment_order_date
-    datatype: date
+    datatype: ThreePartsDate
 ---
 id: court-ordered
 question: |
