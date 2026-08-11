@@ -621,23 +621,6 @@ content: |
 
   [FILE case_number_writ_for_garnishment.png, 100%]
 ---
-id: issue_date
-question: |
-  When was your Writ of Garnishment issued?
-subquestion: |
-  ${ collapse_template(where_date_writ_of_garnishment_template) }
-fields:
-  - Date of issue: issue_date
-    datatype: ThreePartsDate
----
-template: where_date_writ_of_garnishment_template
-subject: |
-  Where can I find the Date of Issue?
-content: |
-  Look for the Date of Issue on the bottom left-hand corner of the Writ of Garnishment.
-
-# add correct Date of Issue image #
----
 id: date_of_issue
 question: |
   When was your Writ of Garnishment issued?
