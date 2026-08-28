@@ -621,23 +621,6 @@ content: |
 
   [FILE case_number_writ_for_garnishment.png, 100%]
 ---
-id: issue_date
-question: |
-  When was your Writ of Garnishment issued?
-subquestion: |
-  ${ collapse_template(where_date_writ_of_garnishment_template) }
-fields:
-  - Date of issue: issue_date
-    datatype: date
----
-template: where_date_writ_of_garnishment_template
-subject: |
-  Where can I find the Date of Issue?
-content: |
-  Look for the Date of Issue on the bottom left-hand corner of the Writ of Garnishment.
-
-# add correct Date of Issue image #
----
 id: date_of_issue
 question: |
   When was your Writ of Garnishment issued?
@@ -645,7 +628,7 @@ subquestion: |
   ${ collapse_template(find_date_of_issue_template) }
 fields:
   - Date of Issue: date_of_issue
-    datatype: date
+    datatype: ThreePartsDate
 validation code: |
   if date_of_issue > today():
     validation_error("The Date of Issue cannot be in the future.")
@@ -669,7 +652,7 @@ subquestion: |
   This is the date it was served on you.
 fields:
   - Service date: service_date
-    datatype: date
+    datatype: ThreePartsDate
 validation code: |
   if service_date > today():
     validation_error("The service date cannot be in the future.")
@@ -891,7 +874,7 @@ question: |
   When was the installment payment order issued?
 fields:
   - Order issue date: installment_order_date
-    datatype: date
+    datatype: ThreePartsDate
 ---
 id: court-ordered
 question: |
